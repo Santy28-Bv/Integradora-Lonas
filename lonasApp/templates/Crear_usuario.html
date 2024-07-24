@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Crea tu Usuario
+{% endblock %}
+
+{% block body %}
+    <form id="formularioUsuario" action="{{ url_for('formulario_usuario') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <!-- Alerta para campos vacíos -->
+        <div id="alertCamposVacios" class="alert alert-danger mt-3" style="display: none;">
+            Por favor, llena todos los campos antes de enviar el formulario.
+        </div>
+        
+        <!-- Campo de Nombre de Usuario -->
+        <div class="form-group">
+            <label for="username">Nombre de Usuario</label>
+            <input type="text" class="form-control" id="username" name="Username" placeholder="xXJuanito_GAMER_PRO777Xx" aria-describedby="emailHelp">
+            <small id="emailHelp" class="form-text text-muted">Añade un Nombre de Usuario incluyendo caracteres especiales ($, @, ., etc)</small>
+        </div>
+        
+        <!-- Campo de Contraseña -->
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" class="form-control" id="password" name="Password" placeholder="Tu contraseña">
+        </div>
+        
+        <!-- Checkbox de Recuérdame -->
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1" name="Recuerdame">
+            <label class="form-check-label" for="exampleCheck1">Recuérdame</label>
+        </div>
+        
+        <!-- Botones para enviar y cancelar -->
+        <button type="submit" class="btn btn-primary">Siguiente</button>
+        <button type="reset" class="btn btn-danger">Cancelar</button>
+    </form>
+    
+    <!-- Scripts de Bootstrap y Validación -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+
+    <script>
+        // Validación del formulario antes de enviar
+        document.getElementById('formularioUsuario').addEventListener('submit', function(event) {
+            // Validar campos aquí (ejemplo básico)
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                // Mostrar la alerta si hay campos vacíos
+                document.getElementById('alertCamposVacios').style.display = 'block';
+                event.preventDefault(); // Evitar que se envíe el formulario
+            }
+        });
+    </script>
+{% endblock %}

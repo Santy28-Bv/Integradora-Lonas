@@ -1,0 +1,45 @@
+{% extends './layout.html' %}
+
+{% block body %}
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<h3>Formulario de Carpas</h3>
+<form action="{{ url_for('carpas_crear') }}" method="post" class="row g-3">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="colorInput" placeholder="Color" name="color">
+        <label for="colorInput">Color</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="number" class="form-control" id="cantidadInput" placeholder="Cantidad" name="cantidad">
+        <label for="cantidadInput">Cantidad</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="precioInput" placeholder="Precio de Renta" name="precio_renta">
+        <label for="precioInput">Precio de Renta</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="anchoInput" placeholder="Ancho (metros)" name="ancho">
+        <label for="anchoInput">Ancho (metros)</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="largoInput" placeholder="Largo (metros)" name="largo">
+        <label for="largoInput">Largo (metros)</label>
+    </div>
+    <div class="d-flex gap-2 justify-content-center py-5">
+        <button class="btn btn-primary align-items-center" type="submit">Guardar</button>
+        <a class="btn btn-outline-danger align-items-center" href="{{ url_for('lonas_dashboard') }}">Cancelar</a>
+    </div>
+</form>
+
+{% endblock %}

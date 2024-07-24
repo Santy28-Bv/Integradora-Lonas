@@ -1,0 +1,109 @@
+{% extends "layout_admin_3.html" %}
+
+{% block title %}
+    Mis Datos Personales
+{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .sidebar {
+        height: 100vh;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #333;
+        padding-top: 20px;
+    }
+    .sidebar a {
+        padding: 15px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #f1f1f1;
+        display: block;
+    }
+    .sidebar a:hover {
+        background-color: #ffa704;
+    }
+    .main-content {
+        margin-left: 250px;
+        padding: 20px;
+    }
+    .datos-cliente table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .datos-cliente th, .datos-cliente td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    .datos-cliente th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<div class="sidebar">
+    <a href="{{ url_for('index') }}">Inicio</a>
+    <a href="{{ url_for('dashboardClienteMisDatos') }}">Mis Datos</a>
+    <a href="#about">Mis pedidos</a>
+</div>
+
+<div class="main-content">
+    <h1>Mis Datos Personales</h1>
+    <p>Actualiza o Elimina tus datos</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="datos-cliente">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
+                    <th>Dirección</th>
+                    <th>Estado</th>
+                    <th>Municipio</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if datos_cliente %}
+                    <tr>
+                        <td>{{ datos_cliente[1] }}</td>
+                        <td>{{ datos_cliente[2] }}</td>
+                        <td>{{ datos_cliente[3] }}</td>
+                        <td>{{ datos_cliente[4] }}</td>
+                        <td>{{ datos_cliente[5] }}</td>
+                        <td>{{ datos_cliente[6] }}</td>
+                        <td>{{ datos_cliente[7] }}</td>
+                        <td>{{ datos_cliente[8] }}</td>
+                        <td>
+                            <a href="{{ url_for('EditarDatosCliente', id_cliente=datos_cliente[0]) }}">Editar</a>
+                            <a href="{{ url_for('EliminarDatosCliente', id_cliente=datos_cliente[0]) }}" onclick="return confirm('¿Estás seguro de que deseas eliminar estos datos?');">Eliminar</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="9">No se encontraron datos de cliente.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends './layout_admin.html' %}
+{%block title%} 
+{% endblock %}
+
+{% block body %}
+
+    <h1>¿Que es HTML?</h1>
+    <p>Es el lenguaje con el que se escribe el contenido de las páginas web. 
+        Las páginas web pueden ser vistas por el usuario mediante un tipo de aplicación llamada cliente web o más comúnmente "navegador". 
+        Podemos decir por lo tanto que el HTML es el lenguaje usado para especificar el contenido que los navegadores deben representar a la hora de mostrar una página web.
+        Este lenguaje nos permite aglutinar textos, imágenes, enlaces, etc y combinarlos a nuestro gusto. La ventaja del HTML a la hora de representar el contenido en un navegador, 
+        con respecto a otros formatos físicos como libros o revistas, es justamente la posibilidad de colocar referencias a otras páginas, por medio de los enlaces de hipertexto.  </p>
+    <a href="{{url_for('about_us')}}">About us!</a>
+
+    {% endblock %}

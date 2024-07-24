@@ -1,0 +1,35 @@
+{% extends './layout_admin.html' %}
+
+{% block title %} {{ titulo }} {% endblock %}
+
+{% block body %}
+
+<div class="card mb-3" style="max-width: 540px;">
+    <div class="row g-0">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ lona[1] }}</h5> 
+                <p class="card-text"><strong>Cantidad: </strong>{{ lona[2] }}</p> 
+                <p class="card-text"><strong>Precio de Renta: </strong>{{ lona[3] }}</p> 
+                <p class="card-text"><strong>Ancho: </strong>{{ lona[4] }}</p> 
+                <p class="card-text"><strong>Largo: </strong>{{ lona[5] }}</p> 
+                <p class="card-text"><strong>Estado: </strong>
+                    {% if lona[6] == true %}
+                        <span style="color: green;">Disponible</span>
+                    {% else %}
+                        <span style="color: red;">No Disponible</span>
+                    {% endif %}
+                </p>
+                <p class="card-text"><small class="text-muted">Última edición: {{ lona[7] }}</small></p>
+                <p class="card-text"><small class="text-muted">Fecha de creación: {{ lona[8] }}</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{{ url_for('lona_editar', id=lona[0]) }}" class="btn btn-primary">Editar</a>
+<a href="{{ url_for('lonas_dashboard') }}" class="btn btn-danger">Atrás</a>
+
+{% endblock %}

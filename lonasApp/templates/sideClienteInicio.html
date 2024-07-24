@@ -1,0 +1,63 @@
+{% extends "layout_admin_3.html" %}
+
+{% block title %}
+    Crea tu Usuario
+{% endblock %}
+
+{% block body %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sidebar Example</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .sidebar {
+        height: 100vh;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #333;
+        padding-top: 20px;
+    }
+    .sidebar a {
+        padding: 15px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #f1f1f1;
+        display: block;
+    }
+    .sidebar a:hover {
+        background-color: #ffa704;
+    }
+    .main-content {
+        margin-left: 250px;
+        padding: 20px;
+    }
+</style>
+
+<div class="sidebar">
+
+    <a href="{{ url_for('dashboardClienteMisDatos') }}">Ver</a>
+    <a href="{{ url_for('index') }}">Salir</a>
+
+    
+</div>
+
+<div class="main-content">
+    <h1>Mis Datos Personales</h1>
+    <p>Bienvenido ;)</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    
+{% endblock %}

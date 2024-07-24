@@ -1,0 +1,54 @@
+{% extends "Layout.html" %}
+
+{% block title %}
+    Dashboard Cliente
+{% endblock %}
+
+{% block body %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sidebar Example</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .sidebar {
+        height: 100vh;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        right: 0; /* Cambiado de 'left' a 'right' */
+        background-color: #333;
+        padding-top: 20px;
+    }
+    .sidebar a {
+        padding: 15px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #f1f1f1;
+        display: block;
+    }
+    .sidebar a:hover {
+        background-color: #ffa704;
+    }
+    .main-content {
+        margin-right: 250px; /* Cambiado de 'left' a 'right' */
+        padding: 20px;
+    }
+</style>
+
+<div class="sidebar">
+    <a href="#">Inicio</a>
+    <a href="{{url_for ('DashboardClienteMisDatos')}}">Cliente Panel</a>
+        <a href="#about">Mis pedidos</a>
+</div>
+
+<div class="main-content">
+    <h1>Welcome to the Dashboard</h1>
+    <p>This is a simple sidebar example with options.</p>
+</div>
+
+{% endblock %}
+

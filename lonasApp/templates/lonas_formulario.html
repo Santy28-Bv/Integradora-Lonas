@@ -1,0 +1,49 @@
+{% extends './layout.html' %}
+
+{% block body %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<h3>Formulario de Lona</h3>
+<form action="{{ url_for('lona_crear') }}" method="post" enctype="multipart/form-data" class="row g-3">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group mb-3">
+        <label for="formFile" class="form-label">Foto de perfil</label>
+        <input class="form-control" type="file" id="formFile" name="Foto" required accept="image/png, .jpeg, .jpg">
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="color" placeholder="Color" name="color" required>
+        <label for="color">Color</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="number" class="form-control" id="cantidad" placeholder="Cantidad" name="cantidad" required>
+        <label for="cantidad">Cantidad</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="precio_renta" placeholder="Precio de Renta" name="precio_renta" required>
+        <label for="precio_renta">Precio de Renta</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="ancho" placeholder="Ancho" name="ancho" required>
+        <label for="ancho">Ancho (metros)</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="largo" placeholder="Largo" name="largo" required>
+        <label for="largo">Largo (metros)</label>
+    </div>
+    <div class="d-flex gap-2 justify-content-center py-5">
+        <button class="btn btn-primary align-items-center" type="submit">Guardar</button>
+        <a class="btn btn-outline-danger align-items-center" href="{{ url_for('lonas_dashboard') }}">Cancelar</a>
+    </div>
+</form>
+
+{% endblock %}
