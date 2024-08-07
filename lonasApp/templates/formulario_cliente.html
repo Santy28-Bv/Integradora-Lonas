@@ -14,33 +14,33 @@
     <form id="formularioUsuario" action="{{ url_for('Cliente') }}" method="POST">
         <div class="col-md-6">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
+    
             <div id="alertCamposIncompletos" class="alert alert-warning mt-3" style="display: none;">
                 ¡No puedes enviar el formulario con campos vacíos!
             </div>
-
+    
             <div id="alertTelefonoNumerico" class="alert alert-warning mt-3" style="display: none;">
                 Por favor, ingresa un número de teléfono válido (solo números).
             </div>
-
+    
             <label for="inputNombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="inputNombre" name="Nombre" placeholder="Ingresa tu Nombre">
+            <input type="text" class="form-control" id="inputNombre" name="nombre" placeholder="Ingresa tu Nombre">
         </div>
         <div class="col-md-6">
             <label for="inputApellido" class="form-label">Apellido Paterno</label>
-            <input type="text" class="form-control" id="inputApellido" name="Apellido_paterno" placeholder="Ingresa tu Apellido Paterno">
+            <input type="text" class="form-control" id="inputApellido" name="apellido_paterno" placeholder="Ingresa tu Apellido Paterno">
         </div>
         <div class="col-12">
             <label for="inputApellidoMaterno" class="form-label">Apellido Materno</label>
-            <input type="text" class="form-control" id="inputApellidoMaterno" name="Apellido_materno" placeholder="Ingresa tu Apellido Materno">
+            <input type="text" class="form-control" id="inputApellidoMaterno" name="apellido_materno" placeholder="Ingresa tu Apellido Materno">
         </div>
         <div class="col-12">
             <label for="inputDireccion" class="form-label">Dirección</label>
-            <input type="text" class="form-control" id="inputDireccion" name="Direccion" placeholder="Ingresa tu Dirección">
+            <input type="text" class="form-control" id="inputDireccion" name="direccion" placeholder="Ingresa tu Dirección">
         </div>
         <div class="col-md-4">
             <label for="inputEstado" class="form-label">Estado</label>
-            <select id="inputEstado" class="form-control" name="Estado">
+            <select id="inputEstado" class="form-control" name="estado">
                 <option value="" selected>Selecciona tu estado</option>
                 <option value="Aguascalientes">Aguascalientes</option>
                 <option value="Baja California">Baja California</option>
@@ -78,21 +78,23 @@
         </div>
         <div class="col-md-2">
             <label for="inputMunicipio" class="form-label">Municipio</label>
-            <input type="text" class="form-control" id="inputMunicipio" name="Municipio" placeholder="Tu municipio">
+            <input type="text" class="form-control" id="inputMunicipio" name="municipio" placeholder="Tu municipio">
         </div>
         <div class="col-12">
             <label for="inputTelefono" class="form-label">Teléfono</label>
-            <input type="text" class="form-control" id="inputTelefono" name="Telefono" placeholder="Ingresa tu número de teléfono">
+            <input type="text" class="form-control" id="inputTelefono" name="telefono" placeholder="Ingresa tu número de teléfono">
         </div>
         <div class="col-md-6">
-            <label for="inputEmail" class="form-label">Email</label>
-            <input type="email" class="form-control" id="inputEmail" name="Email" placeholder="Correo@ejemplo.com">
+            <label for="inputUser" class="form-label">Nombre de Usuario</label>
+            <input type="text" class="form-control" id="inputUser" name="username" placeholder="@Juanito_27">
+            <small id="inputUser" class="form-text text-muted">Añade un Nombre de Usuario incluyendo caracteres especiales ($, @, ., etc)</small>
         </div>
         <div class="col-12">
             <button type="submit" class="btn btn-primary">Siguiente</button>
             <button type="reset" class="btn btn-danger">Cancelar</button>
         </div>
     </form>
+    
 </body>
 
 <script>

@@ -45,20 +45,18 @@ if not os.path.exists(app.config['UPLOAD_FOLDER_LONAS']):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Función para establecer conexión a la base de datos
+## Función para obtener la conexión a la base de datos
 def get_db_connection():
     try:
-        conn = psycopg2.connect(
-            host='localhost',
-            dbname='lonas',  # Cambiado de 'escuela' a 'lonas'
-            port='5432',
-            user=os.environ['DB_USERNAME'],
-            password=os.environ['DB_PASSWORD']
-        )
+        conn = psycopg2.connect(host='localhost',
+                                dbname='lonas',
+                                user=os.environ['DB_USER'],
+                                password=os.environ['DB_PASSWORD'])
         return conn
     except psycopg2.Error as error:
         print(f"Error al conectar a la base de datos: {error}")
         return None
+
 
 #---------------INICIO------------#
 
@@ -102,30 +100,29 @@ def paginador(sql_count, sql_lim, in_page, per_pages):
 
 #---------------------CRUD DE USUARIO ----------------------#
 @app.route('/formulario_usuario', methods=['GET', 'POST'])
-@login_required
 def formulario_usuario():
     if request.method == 'POST':
-        name_user = request.form['Username']
-        password_user = request.form['Password']
+        correo = request.form['correo']
+        password = generate_password_hash(request.form['password'])
 
-        if not name_user or not password_user:
-            flash("Username y Password son requeridos.", 'error')
+        if not correo or not password:
+            flash("Correo y password son requeridos.", 'error')
             return redirect(url_for('formulario_usuario'))
 
         conn = get_db_connection()
         if conn:
             cur = conn.cursor()
             try:
-                # Verificar si el Username ya existe
-                cur.execute('SELECT 1 FROM usuario WHERE "Username" = %s', (name_user,))
+                # Verificar si el correo ya existe
+                cur.execute('SELECT 1 FROM usuario WHERE "correo" = %s', (correo,))
                 if cur.fetchone():
-                    flash("El Username ya existe.", 'error')
+                    flash("El correo ya existe.", 'error')
                     return redirect(url_for('formulario_usuario'))
                 
                 # Insertar en la tabla usuario y obtener el id del usuario creado
                 cur.execute(
-                    'INSERT INTO usuario ("Username", "Password") VALUES (%s, %s) RETURNING id_user',
-                    (name_user, password_user)
+                    'INSERT INTO usuario ("correo", "password") VALUES (%s, %s) RETURNING id_user',
+                    (correo, password)
                 )
                 id_user = cur.fetchone()[0]
                 
@@ -150,42 +147,46 @@ def formulario_usuario():
     return render_template('Crear_Usuario.html')
 
 
+
+
 @app.route('/datosCliente', methods=['GET', 'POST'])
-@login_required
 def Cliente():
     if request.method == 'POST':
-        Nombre = request.form['Nombre']
-        Apellido_Pa = request.form['Apellido_paterno']
-        Apellido_Ma = request.form['Apellido_materno']
-        Direccion = request.form['Direccion']
-        Estado = request.form['Estado']
-        Municipio = request.form['Municipio']
-        Telefono = request.form['Telefono']
-        Correo = request.form['Email']
+        # Obtener los datos del formulario
+        Nombre = request.form.get('nombre')
+        Apellido_Pa = request.form.get('apellido_paterno')
+        Apellido_Ma = request.form.get('apellido_materno')
+        Direccion = request.form.get('direccion')
+        Estado = request.form.get('estado')
+        Municipio = request.form.get('municipio')
+        Telefono = request.form.get('telefono')
+        Usuario = request.form.get('username')
 
         # Obtener fk_usuario de la sesión
         fk_usuario = session.get('id_user')
 
-        if not Nombre or not Apellido_Pa or not Apellido_Ma or not Direccion or not Estado or not Municipio or not Telefono or not Correo or not fk_usuario:
+        # Verificar si algún dato falta
+        if not Nombre or not Apellido_Pa or not Apellido_Ma or not Direccion or not Estado or not Municipio or not Telefono or not Usuario or not fk_usuario:
             flash("Todos los datos del cliente son requeridos.", 'error')
             return redirect(url_for('Cliente'))
 
+        # Conexión a la base de datos
         conn = get_db_connection()
         if conn:
             cur = conn.cursor()
             try:
-                # Insertar en la tabla cliente
+                # Insertar en la tabla cliente (ajustar la sintaxis según tu base de datos)
                 cur.execute(
-                    'INSERT INTO cliente ("Nombre", "Apellido_paterno", "Apellido_materno", "Direccion", "Estado", "Municipio", "Telefono", "Email", "fk_usuario") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                    (Nombre, Apellido_Pa, Apellido_Ma, Direccion, Estado, Municipio, Telefono, Correo, fk_usuario)
+                    'INSERT INTO cliente (nombre, apellido_paterno, apellido_materno, direccion, estado, municipio, telefono, username, fk_usuario) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                    (Nombre, Apellido_Pa, Apellido_Ma, Direccion, Estado, Municipio, Telefono, Usuario, fk_usuario)
                 )
                 conn.commit()
                 flash("Datos de cliente guardados correctamente", 'success')
-                
+
                 # Redirigir al índice o a la página correspondiente
                 return redirect(url_for('index'))
-                
-            except psycopg2.Error as e:
+
+            except Exception as e:
                 conn.rollback()
                 flash(f"Error al guardar los datos del cliente en la base de datos: {e}", 'error')
             finally:
@@ -194,8 +195,11 @@ def Cliente():
         else:
             flash("Error al conectar a la base de datos", 'error')
             return redirect(url_for('Cliente'))
-        
-        return render_template('formulario_cliente.html')
+
+    # Renderizar el template del formulario
+    return render_template('formulario_cliente.html')
+
+
     
 @app.route('/sideclienteInicio')
 @login_required
@@ -232,14 +236,14 @@ def EditarDatosCliente(id_cliente):
             return redirect(url_for('dashboardClienteMisDatos'))
 
     elif request.method == 'POST':
-        nombre = request.form['Nombre']
-        apellido_pa = request.form['Apellido_paterno']
-        apellido_ma = request.form['Apellido_materno']
-        direccion = request.form['Direccion']
-        estado = request.form['Estado']
-        municipio = request.form['Municipio']
-        telefono = request.form['Telefono']
-        email = request.form['Email']
+        nombre = request.form['nombre']
+        apellido_pa = request.form['apellido_paterno']
+        apellido_ma = request.form['apellido_materno']
+        direccion = request.form['direccion']
+        estado = request.form['estado']
+        municipio = request.form['municipio']
+        telefono = request.form['telefono']
+        email = request.form['email']
 
         try:
             cur.execute('UPDATE cliente SET "Nombre" = %s, "Apellido_paterno" = %s, "Apellido_materno" = %s, "Direccion" = %s, "Estado" = %s, "Municipio" = %s, "Telefono" = %s, "Email" = %s WHERE id_cliente = %s',
@@ -549,30 +553,36 @@ def login():
 @app.route('/loguear', methods=['POST'])
 def loguear():
     if request.method == 'POST':
-        Username = request.form['Username']
-        Password = request.form['Password']
-        user = User(0, Username, Password, None)
-        loged_user = ModuleUser.login(get_db_connection(), user)
-        print(loged_user)
-        if loged_user is not None:
-            if loged_user.password:
-                login_user(loged_user)
-                return redirect(url_for('lonas_dashboard'))
-            else:
-                flash('Nombre de usuario y/o Contraseña incorrecta.')
-                return render_template('login.html')
+        correo = request.form.get('correo')
+        password = request.form.get('password')
+        
+        print(f"Datos recibidos: correo={correo}, password={password}")
+
+        if not correo or not password:
+            print("Correo o contraseña vacíos.")
+            flash('Correo y/o contraseña incorrectos.')
+            return redirect(url_for('login'))
+        
+        loged_user = ModuleUser.login(get_db_connection(), correo, password)
+        
+        print(f"Loged_user: {loged_user}")
+
+        if loged_user:
+            login_user(loged_user)
+            flash(f'Bienvenido, {loged_user.username}!')
+            return redirect(url_for('index'))  
         else:
-            flash('Nombre de usuario y/o Contraseña incorrecta.')
-            return render_template('login.html')
+            flash('Correo y/o contraseña incorrectos.')
+            return redirect(url_for('login'))
     else:
-        flash('Nombre de usuario y/o Contraseña incorrecta.')
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
 #------------------PAGINA DE ERROR Y PUERTO--------------#
 
 def pagina_no_encontrada(error):
