@@ -1,17 +1,9 @@
 {% extends './layout.html' %}
 
 {% block body %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>{{ message }}</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+
 
 <h3>Formulario de Carpas</h3>
 <form action="{{ url_for('carpas_crear') }}" method="post" class="row g-3">

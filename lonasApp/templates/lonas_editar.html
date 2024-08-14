@@ -1,18 +1,8 @@
 {% extends './layout_admin.html' %}
 
 {% block title %} dashboard {% endblock %}
-
 {% block body %}
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>{{ message }}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+
 
     <div class="mt-2 mb-3">
         <div class="row justify-content-center">
@@ -93,4 +83,4 @@
             <a class="btn btn-outline-danger" href="{{ url_for('lonas_dashboard') }}">Cancelar</a>
         </div>
     </form>
-{% endblock %}
+    {% endblock %}
