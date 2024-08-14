@@ -5,6 +5,35 @@
 {% endblock %}
 
 {% block body %}
+    <!-- Modal para Términos y Condiciones -->
+    <div class="modal fade" id="terminosModal" tabindex="-1" role="dialog" aria-labelledby="terminosModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="terminosModalLabel">Términos y condiciones de uso:</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Aceptación 
+                        Al elegir nuestra aplicación web, acepta los términos y condiciones de uso sobre el producto, los derechos de autor están reservados, único uso es para el negocio Alquiladora el Carmen lonas y carpas de sus empleados y clientes.
+                        aceptar los términos y condiciones acepta cada uno de los puntos de los términos y condiciones, dado caso que no acepte los términos y condiciones no podrá usar la Aplicación Web.
+                        Responsabilidades del propietario.
+                        Usted es responsable del resguardo y mantenimiento, como la rentabilidad del dominio en línea del producto, tanto de tener un equipo de cómputo con las características recomendadas para su uso adecuado.
+                        Soporte, actualización y mantenimiento
+                        Nos comprometemos a dar soporte técnico siempre y cuando el cliente acepte estos términos y condiciones, mas aparte si es solicitado por el cliente, dado caso que usted no quiera nuestros servicios para el mantenimiento de esta aplicación web no se le cobrara, pero se quedara sin mantenimiento por parte de nosotros, donde la opción de mantenimiento puede ser una de estas que usted elija, mensualmente o anualmente teniendo sus costos respectivos.
+                        Al aceptar los términos y condiciones usted se compromete a conocer las funciones del sistema, así como capacitar a sus empleados para que usen el sistema de forma óptima.
+                        </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn borderr opacity colorR" id="aceptarTerminos">Aceptar</button>
+                    <button type="button" class="btn borderr opacity colorR" id="rechazarTerminos">Rechazar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <form id="formularioUsuario" action="{{ url_for('formulario_usuario') }}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
@@ -55,16 +84,32 @@
 
         // Validación del formulario antes de enviar
         document.getElementById('formularioUsuario').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evitar el envío inmediato del formulario
             var correo = document.getElementById('correo').value;
             var password = document.getElementById('password').value;
 
             if (!correo || !password) {
                 // Mostrar la alerta si hay campos vacíos
                 document.getElementById('alertCamposVacios').style.display = 'block';
-                event.preventDefault(); // Evitar que se envíe el formulario
+            } else {
+                // Mostrar el modal de términos y condiciones
+                $('#terminosModal').modal('show');
             }
         });
+
+        // Controlar la aceptación de los términos
+        document.getElementById('aceptarTerminos').addEventListener('click', function () {
+            $('#terminosModal').modal('hide');
+            document.getElementById('formularioUsuario').submit(); // Enviar el formulario
+        });
+
+        // Controlar el rechazo de los términos
+        document.getElementById('rechazarTerminos').addEventListener('click', function () {
+            $('#terminosModal').modal('hide');
+            alert("Debe aceptar los términos y condiciones para continuar.");
+        });
     </script>
+
     <style>
         .border12{
             border-radius: 100px;

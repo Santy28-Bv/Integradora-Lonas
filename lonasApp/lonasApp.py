@@ -697,18 +697,23 @@ def pedidoslona():
 def pedidoscarpa():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM vista_pedidos_carpa ORDER BY id_alquila ASC;")
+    cur.execute("SELECT * FROM alquiladores_datos ORDER BY id_alquila ASC;")
     datos = cur.fetchall()
     cur.close()
     conn.close()
     return render_template('pedidos_carpa.html',  dato=datos)
 
 
-
-
 def calcular_total():
     # Implementar la lógica para calcular el total basado en el precio de la lona y otros factores
     return 0.0
+
+
+@app.route('/Contactanos')
+def conocenos():
+    return render_template('Conocenos.html')
+
+
 
 #------------------PAGINA DE ERROR Y PUERTO--------------#
 
