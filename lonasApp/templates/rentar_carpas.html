@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block title %} Solicitud Carpa {% endblock %}
+
+{% block body %}
+
+<h1>SOLICITE SU CARPA</h1>
+<!-- Formulario de Solicitud -->
+<form action="" method="POST">
+  
+  <!-- Fecha de Inicio -->
+  <div class="form-group">
+    <label for="fecha_inicio">Fecha de solicitud:</label>
+    <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+  </div>
+
+  <!-- Fecha de Fin -->
+  <div class="form-group">
+    <label for="fecha_fin">Fecha a devolver:</label>
+    <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
+  </div>
+
+  <!-- Método de Pago -->
+  <div class="form-group">
+    <label for="inputMetododepago">Método de Pago:</label>
+    <select id="inputMetododepago" class="form-control" name="metodo_de_pago" required>
+      <option value="" selected>Selecciona tu Método de pago</option>
+      <option value="Efectivo">Efectivo</option>
+      <option value="Deposito">Depósito</option>
+    </select>
+  </div>
+
+  <!-- Selección de Medidas -->
+  <div class="form-group">
+    <label for="inputMedidas">Selecciona las medidas:</label>
+    <select id="inputMedidas" class="form-control" name="medidas" required>
+      <option value="" selected>Selecciona las medidas</option>
+      <option value="10x10">10x10</option>
+      <option value="15x15">15x15</option>
+      <option value="20x20">20x20</option>
+    </select>
+  </div>
+
+  <!-- Botón de Envío -->
+  <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+  <a href="{{ url_for('index') }}" class="btn colorI mx-2 border11 opacity">Cancelar</a>
+
+</form>
+
+{% endblock %}

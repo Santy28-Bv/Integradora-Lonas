@@ -24,8 +24,9 @@
                 <th>Color</th>
                 <th>Cantidad</th>
                 <th>Precio de Renta</th>
-                <th>Ancho</th>
-                <th>Largo</th>
+                <th>Medidas</th>
+                <th>Unidad de Medida</th>
+
             </tr>
         </thead>
         <tbody>
@@ -48,8 +49,8 @@
                         <td>{{ carpa['color'] }}</td>
                         <td>{{ carpa['cantidad'] }}</td>
                         <td>{{ carpa['precio_renta'] }}</td>
-                        <td>{{ carpa['ancho'] }}</td>
-                        <td>{{ carpa['largo'] }}</td>
+                        <td>{{ carpa['medidas'] }}</td>
+                        <td>Metros</td>
                     </tr>
                 {% endfor %}
             {% else %}

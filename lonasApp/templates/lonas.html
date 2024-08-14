@@ -1,18 +1,11 @@
 {% extends './layout_admin.html' %}
 
-{% block title %}{{ titulo }}{% endblock %}
+{% block title %}lonas{% endblock %}
 
 {% block body %}
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>{{ message }}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+
 
     <a href="{{ url_for('lona_formulario') }}" class="btn btn-primary mb-3"><i class="fas fa-plus-circle"></i>Agregar Lona</a>
 
@@ -24,8 +17,7 @@
                 <th>Color</th>
                 <th>Cantidad</th>
                 <th>Precio de la Renta</th>
-                <th>Ancho</th>
-                <th>Largo</th>
+                <th>Medidas</th>
                 <th>Medida</th>
             </tr>
         </thead>
@@ -49,9 +41,8 @@
                         <td>{{ lona['color'] }}</td>
                         <td>{{ lona['cantidad'] }}</td>
                         <td>{{ lona['precio_renta'] }}</td>
-                        <td>{{ lona['ancho'] }}</td>
-                        <td>{{ lona['largo'] }}</td>
-                        <td>{{ lona['unidad_medida'] }}</td>
+                        <td>{{ lona['medidas'] }}</td>
+                        <td>metros</td>
                     </tr>
                 {% endfor %}
             {% else %}

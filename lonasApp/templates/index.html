@@ -3,32 +3,88 @@
 {% block title %} Página Principal {% endblock %}
 
 {% block body %}
-    <h1>{{ titulo }}</h1>
-    <h1>¿Qué es HTML?</h1>
-    <p>Es el lenguaje con el que se escribe el contenido de las páginas web. 
-        Las páginas web pueden ser vistas por el usuario mediante un tipo de aplicación llamada cliente web o más comúnmente "navegador". 
-        Podemos decir por lo tanto que el HTML es el lenguaje usado para especificar el contenido que los navegadores deben representar a la hora de mostrar una página web.
-        Este lenguaje nos permite aglutinar textos, imágenes, enlaces, etc y combinarlos a nuestro gusto. La ventaja del HTML a la hora de representar el contenido en un navegador, 
-        con respecto a otros formatos físicos como libros o revistas, es justamente la posibilidad de colocar referencias a otras páginas, por medio de los enlaces de hipertexto.  </p>
-    <a href="{{ url_for('lonas_dashboard') }}">Lonas</a>
 
-    <table class="table table-dark table-hover">
-        <thead>
-            <th>Nombre</th>
-            <th>Cantidad y precio_renta y medidas</th>
-        </thead>
-        <tbody>
-            {% for lona in lonas %}
-            <tr>
-                <td>
-                    {{ lona[1] }} {{ lona[2] }} {{ lona[3] }}
-                    <br>
-                </td>
-                <td>
-                    {{ lona[4] }} {{ lona[5] }}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<html>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<body class="bodi-class">
+    <h1>Bienvenido a Alquiladora el Carmen</h1>
+    <h2>Lonas y Carpas</h2>
+    <p>La Elegancia Bajo el Sol</p>
+
+    
+
+    <div class="slider-container">
+        <div class="slider">
+            <div class="slide current"><img src="{{ url_for('static',filename='img/img_1.jpeg') }}" alt="Imagen 1"></div>
+            <div class="slide"><img src="{{ url_for('static',filename='img/img_2.jpeg') }}" alt="Imagen 2"></div>
+            <div class="slide"><img src="{{ url_for('static',filename='img/img_3.jpeg') }}" alt="Imagen 3"></div>
+            <div class="slide"><img src="{{ url_for('static',filename='img/img_4.jpeg') }}" alt="Imagen 4"></div>
+        </div>
+    </div>
+
+    <div class="tarjeta-container">
+        <div class="tarjeta">
+            <img src="{{ url_for('static', filename='img/img_5.jpeg') }}" alt="">
+            <div class="tarjeta-info">
+                <a href="#" class="ver-mas">Ver mas...</a>
+            </div>
+        </div>
+        <div class="tarjeta">
+            <img src="{{ url_for('static', filename='img/img_6.jpeg') }}" alt="">
+            <div class="tarjeta-info">
+                <a href="#" class="ver-mas">Ver mas...</a>
+            </div>
+        </div>
+        <div class="tarjeta">
+            <img src="{{ url_for('static', filename='img/img_7.jpeg') }}" alt="">
+            <div class="tarjeta-info">
+                <a href="#" class="ver-mas">Ver mas...</a>
+            </div>
+        </div>
+        <div class="tarjeta">
+            <img src="{{ url_for('static', filename='img/img_8.jpeg') }}" alt="">
+            <div class="tarjeta-info">
+                <a href="#" class="ver-mas">Ver mas...</a>
+            </div>
+        </div>
+        <div class="tarjeta">
+            <img src="{{ url_for('static', filename='img/img_9.jpeg') }}" alt="">
+            <div class="tarjeta-info">
+                <a href="#" class="ver-mas">Ver mas...</a>
+            </div>
+        </div>
+        <div class="tarjeta">
+            <img src="{{ url_for('static', filename='img/img_10.jpeg') }}" alt="">
+            <div class="tarjeta-info">
+                <a href="#" class="ver-mas">Ver mas...</a>
+            </div>
+        </div>
+        <div class="tarjeta">
+            <img src="{{ url_for('static', filename='img/img_11.jpeg') }}" alt="">
+            <div class="tarjeta-info">
+                <a href="#" class="ver-mas">Ver mas...</a>
+            </div>
+        </div>
+        <div class="tarjeta">
+            <img src="{{ url_for('static', filename='img/img_12.jpeg') }}" alt="">
+            <div class="tarjeta-info">
+                <a href="#" class="ver-mas">Ver mas...</a>
+            </div>
+        </div>
+        <div class="tarjeta">
+            <img src="{{ url_for('static', filename='img/img_13.jpeg') }}" alt="">
+            <div class="tarjeta-info">
+                <a href="#" class="ver-mas">Ver mas...</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+<footer>
+    <p>&copy; 2024 Tu Nombre o Empresa. Todos los derechos reservados.</p>
+</footer>
 {% endblock %}
+

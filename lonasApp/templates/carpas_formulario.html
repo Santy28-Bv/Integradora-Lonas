@@ -29,13 +29,10 @@
         <label for="precioInput">Precio de Renta</label>
     </div>
     <div class="form-floating mb-3">
-        <input type="text" class="form-control" id="anchoInput" placeholder="Ancho (metros)" name="ancho">
-        <label for="anchoInput">Ancho (metros)</label>
+        <input type="text" class="form-control" id="medidasInput" placeholder="medidas (metros)" name="medidas">
+        <label for="medidasInput">medidas (metros)</label>
     </div>
-    <div class="form-floating mb-3">
-        <input type="text" class="form-control" id="largoInput" placeholder="Largo (metros)" name="largo">
-        <label for="largoInput">Largo (metros)</label>
-    </div>
+   
     <div class="d-flex gap-2 justify-content-center py-5">
         <button class="btn btn-primary align-items-center" type="submit">Guardar</button>
         <a class="btn btn-outline-danger align-items-center" href="{{ url_for('lonas_dashboard') }}">Cancelar</a>

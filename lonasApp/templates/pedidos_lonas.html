@@ -1,0 +1,45 @@
+{% extends 'layout_admin.html' %}
+
+{% block title %} Pedidos {% endblock %}
+
+{% block body %}
+<h1>PEDIDOS DE LONAS</h1>
+<table class="table table-dark table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido Paterno</th>
+            <th>Apellido Materno</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Estatus</th>
+            <th>Metodo de Pago</th>
+            <th>Color</th>
+            <th>Medidas</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fila in dato %}
+        <tr>
+            <td>{{ fila.ID }}</td>
+            <td>{{ fila.Nombre }}</td>
+            <td>{{ fila.Apellido_Paterno }}</td>
+            <td>{{ fila.Apellido_Materno }}</td>
+            <td>{{ fila.Correo }}</td>
+            <td>{{ fila.Telefono }}</td>
+            <td>{{ fila.Fecha_Inicio }}</td>
+            <td>{{ fila.Fecha_Fin }}</td>
+            <td>{{ fila.Estatus }}</td>
+            <td>{{ fila.Metodo_de_Pago }}</td>
+            <td>{{ fila.Color }}</td>
+            <td>{{ fila.Medidas }}</td>
+            <td>{{ fila.Total }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

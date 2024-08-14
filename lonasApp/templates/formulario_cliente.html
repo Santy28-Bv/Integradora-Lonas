@@ -9,6 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
     <form id="formularioUsuario" action="{{ url_for('Cliente') }}" method="POST">
@@ -90,10 +91,24 @@
             <small id="inputUser" class="form-text text-muted">Añade un Nombre de Usuario incluyendo caracteres especiales ($, @, ., etc)</small>
         </div>
         <div class="col-12">
-            <button type="submit" class="btn btn-primary">Siguiente</button>
-            <button type="reset" class="btn btn-danger">Cancelar</button>
+            <button type="submit" class="btn btn-primary border13 opacity">Siguiente</button>
+            <button type="reset" class="btn btn-danger border13 opacity">Cancelar</button>
         </div>
     </form>
+    <style>
+        .border13{
+            border-radius: 100px;
+            background: rgb(63,94,251);
+            background: linear-gradient(90deg, rgb(23, 57, 227) 0%, rgba(104,59,215,1) 100%);
+            border: 2px solid rgb(255, 255, 255);
+
+        }
+
+        .opacity:hover{
+            opacity: .8;
+        }
+
+    </style>
     
 </body>
 

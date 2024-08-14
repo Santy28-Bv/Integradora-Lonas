@@ -1,0 +1,43 @@
+{% extends 'layout_admin.html' %}
+
+{% block title %} Pedidos {% endblock %}
+
+{% block body %}
+<table class="table table-dark table-hover">
+    <thead>
+        <h1>PEDIDOS DE CARPA</h1>
+
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido Paterno</th>
+            <th>Apellido Materno</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Estatus</th>
+            <th>Metodo de Pago</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fila in dato %}
+        <tr>
+            <td>{{ fila[0] }}</td>
+            <td>{{ fila[1] }}</td>
+            <td>{{ fila[2] }}</td>
+            <td>{{ fila[3] }}</td>
+            <td>{{ fila[4] }}</td>
+            <td>{{ fila[5] }}</td>
+            <td>{{ fila[6] }}</td>
+            <td>{{ fila[7] }}</td>
+            <td>{{ fila[8] }}</td>
+            <td>{{ fila[9] }}</td>
+            <td>{{ fila[10] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

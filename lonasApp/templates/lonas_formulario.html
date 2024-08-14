@@ -17,8 +17,8 @@
 <form action="{{ url_for('lona_crear') }}" method="post" enctype="multipart/form-data" class="row g-3">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form-group mb-3">
-        <label for="formFile" class="form-label">Foto de perfil</label>
-        <input class="form-control" type="file" id="formFile" name="Foto" required accept="image/png, .jpeg, .jpg">
+        <label for="formFile" class="form-label">Foto de lona</label>
+        <input class="form-control" type="file" id="formFile" name="Foto" required accept="image/png, image/jpeg">
     </div>
     <div class="form-floating mb-3">
         <input type="text" class="form-control" id="color" placeholder="Color" name="color" required>
@@ -33,13 +33,10 @@
         <label for="precio_renta">Precio de Renta</label>
     </div>
     <div class="form-floating mb-3">
-        <input type="text" class="form-control" id="ancho" placeholder="Ancho" name="ancho" required>
-        <label for="ancho">Ancho (metros)</label>
+        <input type="text" class="form-control" id="medidas" placeholder="medidas (metros)" name="medidas" required>
+        <label for="medidas">medidas (metros)</label>
     </div>
-    <div class="form-floating mb-3">
-        <input type="text" class="form-control" id="largo" placeholder="Largo" name="largo" required>
-        <label for="largo">Largo (metros)</label>
-    </div>
+    
     <div class="d-flex gap-2 justify-content-center py-5">
         <button class="btn btn-primary align-items-center" type="submit">Guardar</button>
         <a class="btn btn-outline-danger align-items-center" href="{{ url_for('lonas_dashboard') }}">Cancelar</a>

@@ -19,8 +19,8 @@ csrf = CSRFProtect()
 app.secret_key = "Secretomuysecreto"
 
 #-------------------imagen-----------#
-ruta_lonas = './app/static/img/uploads/lonas'
-
+ruta_lonas ='./LonasApp/static/img/uploads/lonas'
+ruta_carpas='./LonasApp/static/img/uploads/carpas'
 #------------- Configuración de inicio de sesión ----------#
 Login_manager_app = LoginManager(app)
 
@@ -36,11 +36,14 @@ def my_random_string(string_length=10):
     return random[0:string_length]  # Regresa la cadena aleatoria.
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-app.config['UPLOAD_FOLDER_LONAS'] = './app/static/img/uploads/lonas/'
-app.config['UPLOAD_FOLDER_CARPAS'] = './app/static/img/uploads/carpas/'
+app.config['UPLOAD_FOLDER_LONAS'] = './lonasApp/static/img/uploads/lonas/'
+app.config['UPLOAD_FOLDER_CARPAS'] = './lonasApp/static/img/uploads/carpas/'
 
 if not os.path.exists(app.config['UPLOAD_FOLDER_LONAS']):
     os.makedirs(app.config['UPLOAD_FOLDER_LONAS'])
+    
+if not os.path.exists(app.config['UPLOAD_FOLDER_CARPAS']):
+    os.makedirs(app.config['UPLOAD_FOLDER_CARPAS'])
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -64,12 +67,11 @@ def get_db_connection():
 def index():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM lona ORDER BY id_lona ASC;")
-    lonas = cur.fetchall()
+    cur.execute("SELECT * FROM alquiladores_datos ORDER BY id_alquila ASC;")
+    datos = cur.fetchall()
     cur.close()
     conn.close()
-    titulo = "Panel de Administración"
-    return render_template('index.html', titulo=titulo, lonas=lonas)
+    return render_template('index.html')
 
 @app.route("/about-us")
 def about_us():
@@ -101,6 +103,9 @@ def paginador(sql_count, sql_lim, in_page, per_pages):
 #---------------------CRUD DE USUARIO ----------------------#
 @app.route('/formulario_usuario', methods=['GET', 'POST'])
 def formulario_usuario():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
     if request.method == 'POST':
         correo = request.form['correo']
         password = generate_password_hash(request.form['password'])
@@ -144,13 +149,17 @@ def formulario_usuario():
         else:
             flash("Error al conectar a la base de datos", 'error')
             return redirect(url_for('formulario_usuario'))
+    
     return render_template('Crear_Usuario.html')
 
 
 
-
 @app.route('/datosCliente', methods=['GET', 'POST'])
+
 def Cliente():
+    if current_user.is_authenticated:
+        # Redirigir a una página diferente si el usuario ya está autenticado
+        return redirect(url_for('index'))
     if request.method == 'POST':
         # Obtener los datos del formulario
         Nombre = request.form.get('nombre')
@@ -199,8 +208,6 @@ def Cliente():
     # Renderizar el template del formulario
     return render_template('formulario_cliente.html')
 
-
-    
 @app.route('/sideclienteInicio')
 @login_required
 def sideClienteInicio():
@@ -216,7 +223,6 @@ def dashboardClienteMisDatos():
     cur.close()
     conn.close()
     return render_template('sideclienteDatos.html', datos_cliente=datos_cliente)
-
 
 @app.route('/Editar/Datos/Cliente/<int:id_cliente>', methods=['GET', 'POST'])
 @login_required
@@ -243,11 +249,11 @@ def EditarDatosCliente(id_cliente):
         estado = request.form['estado']
         municipio = request.form['municipio']
         telefono = request.form['telefono']
-        email = request.form['email']
+        username = request.form['username']
 
         try:
-            cur.execute('UPDATE cliente SET "Nombre" = %s, "Apellido_paterno" = %s, "Apellido_materno" = %s, "Direccion" = %s, "Estado" = %s, "Municipio" = %s, "Telefono" = %s, "Email" = %s WHERE id_cliente = %s',
-                        (nombre, apellido_pa, apellido_ma, direccion, estado, municipio, telefono, email, id_cliente))
+            cur.execute('UPDATE cliente SET "nombre" = %s, "apellido_paterno" = %s, "apellido_materno" = %s, "direccion" = %s, "estado" = %s, "municipio" = %s, "telefono" = %s, "email" = %s WHERE id_cliente = %s',
+                        (nombre, apellido_pa, apellido_ma, direccion, estado, municipio, telefono, username, id_cliente))
             conn.commit()
             flash('Datos de cliente actualizados correctamente', 'success')
             return redirect(url_for('dashboardClienteMisDatos'))
@@ -302,252 +308,304 @@ def deleteDataUser(id_cliente):
 @app.route("/dashboard/lonas")
 @login_required
 def lonas_dashboard():
-    titulo = "Lonas"
-    sql_count = 'SELECT COUNT(*) FROM lona;'
-    sql_lim = 'SELECT id_lona, color, cantidad, precio_renta, ancho, largo, unidad_medida FROM lona ORDER BY id_lona DESC LIMIT %s OFFSET %s;'
-    paginado = paginador(sql_count, sql_lim, 1, 5)
-    return render_template('lonas.html',
-                            titulo=titulo,
-                            lonas=paginado[0],
-                            page=paginado[1],
-                            per_page=paginado[2],
-                            total_items=paginado[3],
-                            total_pages=paginado[4])
+    if current_user.rol == 'admin':
 
+        titulo = "Lonas"
+        sql_count = 'SELECT COUNT(*) FROM lona;'
+        sql_lim = 'SELECT id_lona, color, cantidad, precio_renta, medidas FROM lona ORDER BY id_lona DESC LIMIT %s OFFSET %s;'
+        paginado = paginador(sql_count, sql_lim, 1, 5)
+        return render_template('lonas.html',
+                                titulo=titulo,
+                                lonas=paginado[0],
+                                page=paginado[1],
+                                per_page=paginado[2],
+                                total_items=paginado[3],
+                                total_pages=paginado[4])
+    else:
+                return render_template('index.html')
+    
 @app.route("/dashboard/lonas/formulario")
 @login_required
 def lona_formulario():
-    titulo = "Formulario de Lonas"
-    return render_template('lonas_formulario.html', titulo=titulo)
+    if current_user.rol == 'admin':
+            titulo = "Formulario de Lonas"
+            return render_template('lonas_formulario.html', titulo=titulo)
+    else:
+           return render_template('index.html')
+
 
 @app.route("/dashboard/lonas/crear", methods=['GET', 'POST'])
 @login_required
 def lona_crear():
-    if request.method == 'POST':
-        color = request.form['color']
-        cantidad = request.form['cantidad']
-        precio_renta = request.form['precio_renta']
-        ancho = request.form['ancho']
-        largo = request.form['largo']
-        imagen = request.files['Foto']
+    if current_user.rol == 'admin':
+        if request.method == 'POST':
+            color = request.form['color']
+            cantidad = request.form.get('cantidad', type=int)
+            precio_renta = request.form.get('precio_renta', type=float)
+            medidas = request.form.get('medidas')
+            imagen = request.files.get('Foto')
 
-        if imagen and allowed_file(imagen.filename):
-            cadena_aleatoria = my_random_string(10)
-            filename = secure_filename(f"lona_{cadena_aleatoria}_{imagen.filename}")
-            file_path = os.path.join(app.config['UPLOAD_FOLDER_LONAS'], filename)
-            if os.path.exists(file_path):
-                flash('Error: ¡Un archivo con el mismo nombre ya existe! Intente renombrar su archivo.')
+            if imagen and allowed_file(imagen.filename):
+                cadena_aleatoria = my_random_string(10)
+                filename = secure_filename(f"lona_{cadena_aleatoria}_{imagen.filename}")
+                file_path = os.path.join(app.config['UPLOAD_FOLDER_LONAS'], filename)
+                
+                # Verifica si el archivo ya existe antes de guardarlo
+                if os.path.exists(file_path):
+                    flash('Error: ¡Un archivo con el mismo nombre ya existe! Intente renombrar su archivo.')
+                    return redirect(url_for('lona_formulario'))
+
+                imagen.save(file_path)
+                conn = get_db_connection()
+                cur = conn.cursor()
+                cur.execute('INSERT INTO lona (color, cantidad, precio_renta, medidas, imagen) '
+                            'VALUES (%s, %s, %s, %s, %s)',
+                            (color, cantidad, precio_renta, medidas, filename))
+                conn.commit()
+                cur.close()
+                conn.close()
+                flash('¡Lona agregada exitosamente!', 'success')
                 return redirect(url_for('lonas_dashboard'))
-            imagen.save(file_path)
+            else:
+                flash('Error: ¡Extensión de archivo inválida! Intente con una imagen válida PNG, JPG o JPEG.')
+                return redirect(url_for('lona_formulario'))
+        return render_template('lona_formulario.html')
+    else:
+        return redirect(url_for('index'))
 
-            conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute('INSERT INTO lona (color, cantidad, precio_renta, ancho, largo, unidad_medida, filename) '
-                        'VALUES (%s, %s, %s, %s, %s, %s, %s)',
-                        (color, cantidad, precio_renta, ancho, largo, 'metros', filename))
-            conn.commit()
-            cur.close()
-            conn.close()
-            flash('¡Lona agregada exitosamente!', 'success')
-            return redirect(url_for('lonas_dashboard'))
-        else:
-            flash('Error: ¡Extensión de archivo inválida! Intente con una imagen válida PNG, JPG o JPEG.')
-            return redirect(url_for('lona_formulario'))
-    return redirect(url_for('lona_formulario'))
 
 @app.route('/dashboard/lonas/editar/<string:id>')
 @login_required
 def lona_editar(id):
-    titulo = "Editar Lona"
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM lona WHERE id_lona=%s', (id,))
-    lona = cur.fetchone()
-    cur.close()
-    conn.close()
-    if lona:
-        return render_template('lonas_editar.html', titulo=titulo, lona=lona)
+    if current_user.rol == 'admin':
+        titulo = "Editar Lona"
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM lona WHERE id_lona=%s', (id,))
+        lona = cur.fetchone()
+        cur.close()
+        conn.close()
+        if lona:
+            return render_template('lonas_editar.html', titulo=titulo, lona=lona)
+        else:
+            flash('Lona no encontrada', 'danger')
+            return redirect(url_for('lonas_dashboard'))
     else:
-        flash('Lona no encontrada', 'danger')
-        return redirect(url_for('lonas_dashboard'))
+           return redirect(url_for('index'))
+
 
 @app.route('/dashboard/lonas/actualizar/<string:id>', methods=['POST'])
 @login_required
 def lona_actualizar(id):
-    color = request.form['color']
-    cantidad = request.form['cantidad']
-    precio_renta = request.form['precio_renta']
-    ancho = request.form['ancho']
-    largo = request.form['largo']
+    if current_user.rol == 'admin':
+        color = request.form['color']
+        cantidad = request.form.get('cantidad', type=int)
+        precio_renta = request.form.get('precio_renta', type=float)
+        medidas = request.form.get('medidas')
+        conn = get_db_connection()
+        cur = conn.cursor()
+        sql = "UPDATE lona SET color=%s, cantidad=%s, precio_renta=%s, medidas=%s WHERE id_lona=%s"
+        valores = (color, cantidad, precio_renta, medidas, id)
 
-    conn = get_db_connection()
-    cur = conn.cursor()
-    sql = "UPDATE lona SET color=%s, cantidad=%s, precio_renta=%s, ancho=%s, largo=%s WHERE id_lona=%s"
-    valores = (color, cantidad, precio_renta, ancho, largo, id)
-    
-    cur.execute(sql, valores)
-    conn.commit()
-    cur.close()
-    conn.close()
+        cur.execute(sql, valores)
+        conn.commit()
+        cur.close()
+        conn.close()
 
-    flash('¡Lona modificada exitosamente!', 'success')
-    return redirect(url_for('lonas_dashboard'))
-
+        flash('¡Lona modificada exitosamente!', 'success')
+        return redirect(url_for('lonas_dashboard'))
+    else:
+         return redirect(url_for('index'))
 
 @app.route('/dashboard/lonas/actualizar/foto/<string:id>', methods=['POST'])
 @login_required
 def lonas_actualizar_foto(id):
-    if request.method == 'POST':
-        imagen = request.files['Foto']
-        foto_anterior = request.form['anterior']
-        foto_anterior_path = os.path.join(ruta_lonas, foto_anterior) if foto_anterior else None
-        editado = datetime.now()
+    if current_user.rol == 'admin':   
+        if request.method == 'POST':
+            imagen = request.files['Foto']
+            foto_anterior = request.form['anterior']
+            foto_anterior_path = os.path.join(ruta_lonas, foto_anterior) if foto_anterior else None
+            editado = datetime.now()
 
-        if imagen and allowed_file(imagen.filename):
-            cadena_aleatoria = my_random_string(10)
-            filename = cadena_aleatoria + "_" + secure_filename(imagen.filename)
-            file_path = os.path.join(ruta_lonas, filename)
+            if imagen and allowed_file(imagen.filename):
+                cadena_aleatoria = my_random_string(10)
+                filename = cadena_aleatoria + "_" + secure_filename(imagen.filename)
+                file_path = os.path.join(ruta_lonas, filename)
 
-            if os.path.exists(file_path):
-                flash('Error: ¡Un archivo con el mismo nombre ya existe! Intente renombrar su archivo.')
-                return redirect(url_for('lonas_dashboard'))
+                if os.path.exists(file_path):
+                    flash('Error: ¡Un archivo con el mismo nombre ya existe! Intente renombrar su archivo.')
+                    return redirect(url_for('lonas_dashboard'))
 
-            imagen.save(file_path)
+                imagen.save(file_path)
 
-            conn = get_db_connection()
-            cur = conn.cursor()
-            sql = "UPDATE lona SET imagen = %s WHERE id_lona = %s"
-            values = (filename, id)
-            cur.execute(sql, values)
-            conn.commit()
-            cur.close()
-            conn.close()
+                conn = get_db_connection()
+                cur = conn.cursor()
+                sql = "UPDATE lona SET imagen = %s WHERE id_lona = %s"
+                values = (filename, id)
+                cur.execute(sql, values)
+                conn.commit()
+                cur.close()
+                conn.close()
 
-            if foto_anterior_path and os.path.exists(foto_anterior_path):
-                os.remove(foto_anterior_path)
+                if foto_anterior_path and os.path.exists(foto_anterior_path):
+                    os.remove(foto_anterior_path)
 
-            flash('¡Foto de lona actualizada exitosamente!', 'success')
-            return redirect(url_for('lona_editar', id=id))
-        else:
-            flash('Error: ¡Extensión de archivo inválida! Intente con una imagen válida PNG, JPG o JPEG.')
-            return redirect(url_for('lona_editar', id=id))
+                flash('¡Foto de lona actualizada exitosamente!', 'success')
+                return redirect(url_for('lona_editar', id=id))
+            else:
+                flash('Error: ¡Extensión de archivo inválida! Intente con una imagen válida PNG, JPG o JPEG.')
+                return redirect(url_for('lona_editar', id=id))
 
-    return redirect(url_for('lonas_dashboard'))
+        return redirect(url_for('lonas_dashboard'))
+    else:
+        return redirect(url_for('index'))
+
 
 @app.route("/dashboard/lonas/eliminar/<string:id>", methods=['POST'])
 @login_required
 def lona_eliminar(id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('DELETE FROM lona WHERE id_lona = %s', (id,))
-    conn.commit()
-    cur.close()
-    conn.close()
+    if current_user.rol == 'admin':
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('DELETE FROM lona WHERE id_lona = %s', (id,))
+        conn.commit()
+        cur.close()
+        conn.close()
 
-    flash('¡Lona eliminada exitosamente!', 'success')
-    return redirect(url_for('lonas_dashboard'))
+        flash('¡Lona eliminada exitosamente!', 'success')
+        return redirect(url_for('lonas_dashboard'))
+    else:
+       return redirect(url_for('index'))
 
 #---------------CRUD CARPAS---------------#
 
 @app.route("/dashboard/carpas")
 @login_required
 def carpas_dashboard():
-    titulo = "carpas"
-    sql_count = 'SELECT COUNT(*) FROM carpa;'
-    sql_lim = 'SELECT id_carpa, color, cantidad, precio_renta, ancho, largo FROM carpa ORDER BY id_carpa DESC LIMIT %s OFFSET %s;'
-    paginado = paginador(sql_count, sql_lim, 1, 5)
-    return render_template('carpas.html',
-                        titulo=titulo,
-                        carpas=paginado[0],
-                        page=paginado[1],
-                        per_page=paginado[2],
-                        total_items=paginado[3],
-                        total_pages=paginado[4])
+    if current_user.rol == 'admin':
+        titulo = "carpas"
+        sql_count = 'SELECT COUNT(*) FROM carpa;'
+        sql_lim = 'SELECT id_carpa, color, cantidad, precio_renta, medidas FROM carpa ORDER BY id_carpa DESC LIMIT %s OFFSET %s;'
+        paginado = paginador(sql_count, sql_lim, 1, 5)
+        
+        return render_template('carpas.html',
+                               titulo=titulo,
+                               carpas=paginado[0],
+                               page=paginado[1],
+                               per_page=paginado[2],
+                               total_items=paginado[3],
+                               total_pages=paginado[4])
+    else:
+        return redirect(url_for('index'))
+    
 
-@app.route("/dashboard/carpas/formulario")
+@app.route("/dashboard/carpas/formulario", methods=['GET', 'POST'])
 @login_required
 def carpas_formulario():
-    titulo = "Formulario de Carpas"
-    return render_template('carpas_formulario.html', titulo = titulo)
+    if current_user.rol == 'admin':
+        titulo = "Formulario de Carpas"
+        return render_template('carpas_formulario.html', titulo=titulo)
+    else:
+        return redirect(url_for('index'))
 
 @app.route("/dashboard/carpas/crear", methods=['GET', 'POST'])
 @login_required
 def carpas_crear():
-    if request.method == 'POST':
-        color = request.form['color']
-        cantidad = request.form['cantidad']
-        precio_renta = request.form['precio_renta']
-        ancho = request.form['ancho']
-        largo = request.form['largo']
+    if current_user.rol == 'admin':   
+        if request.method == 'POST':
+            color = request.form['color']
+            cantidad = request.form['cantidad']
+            precio_renta = request.form['precio_renta']
+            medidas = request.form['medidas']
 
-        conn = get_db_connection()
-        cur = conn.cursor()
+            conn = get_db_connection()
+            cur = conn.cursor()
 
-        cur.execute('INSERT INTO carpa (color, cantidad, precio_renta, ancho, largo)'
-                    'VALUES ( %s, %s, %s, %s, %s)',
-                    (color, cantidad, precio_renta, ancho, largo))
-        
-        conn.commit()
-        cur.close()
-        conn.close()
-        flash('¡Carpa agregada exitosamente!', 'success')
-        return redirect(url_for('carpas_dashboard'))
-    return redirect(url_for('carpas_formulario'))
+            try:
+                cur.execute('INSERT INTO carpa (color, cantidad, precio_renta, medidas) VALUES (%s, %s, %s, %s)',
+                            (color, cantidad, precio_renta, medidas))
+                conn.commit()
+                flash('¡Carpa agregada exitosamente!', 'success')
+            except psycopg2.errors.UniqueViolation:
+                conn.rollback()
+                flash('Error: Ya existe una carpa con este ID.', 'danger')
+            finally:
+                cur.close()
+                conn.close()
+            return redirect(url_for('carpas_dashboard'))
+        return redirect(url_for('carpas_formulario'))
+    else:        
+        return redirect(url_for('index'))
+
 
 @app.route('/dashboard/carpas/editar/<int:id>')
 @login_required
 def carpas_editar(id):
-    titulo = "Editar Carpa"
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM carpa WHERE id_carpa = %s', (id,))
-    carpa = cur.fetchone()
-    cur.close()
-    conn.close()
-    if carpa:
-        return render_template('carpas_editar.html', titulo = titulo, carpa = carpa)
+
+    if current_user.rol == 'admin':
+        titulo = "Editar Carpa"
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM carpa WHERE id_carpa = %s', (id,))
+        carpa = cur.fetchone()
+        cur.close()
+        conn.close()
+        if carpa:
+            return render_template('carpas_editar.html', titulo = titulo, carpa = carpa)
+        else:
+            flash('Carpa no encontrada', 'danger')
+            return redirect(url_for('carpas_dashboard'))
     else:
-        flash('Carpa no encontrada', 'danger')
-        return redirect(url_for('carpas_dashboard'))
+        return redirect(url_for('index'))
+
 
 
 @app.route('/dashboard/carpas/actualizar/<int:id>', methods=['POST'])
+@login_required
 def carpas_actualizar(id):
-    color = request.form['color']
-    cantidad = request.form['cantidad']
-    precio_renta = request.form['precio_renta']
-    ancho = request.form['ancho']
-    largo = request.form['largo']
+    if current_user.rol == 'admin':
+        color = request.form['color']
+        cantidad = request.form['cantidad']
+        precio_renta = request.form['precio_renta']
+        medidas = request.form['medidas']
 
-    conn = get_db_connection()
-    cur = conn.cursor()
-    sql = "UPDATE carpa SET color = %s, cantidad = %s, precio_renta = %s, ancho = %s, largo = %s WHERE id_carpa = %s"
-    valores = (color, cantidad, precio_renta, ancho, largo, id)
-    
-    cur.execute(sql, valores)
-    conn.commit()
-    cur.close()
-    conn.close()
+        conn = get_db_connection()
+        cur = conn.cursor()
+        sql = "UPDATE carpa SET color = %s, cantidad = %s, precio_renta = %s, medidas = %s WHERE id_carpa = %s"
+        valores = (color, cantidad, precio_renta, medidas, id)
+        
+        cur.execute(sql, valores)
+        conn.commit()
+        cur.close()
+        conn.close()
 
-    flash('¡Carpa modificada exitosamente!', 'success')
-    return redirect(url_for('carpas_dashboard'))
+        flash('¡Carpa modificada exitosamente!', 'success')
+        return redirect(url_for('carpas_dashboard'))
+    else:
+        return redirect(url_for('index'))
 
 @app.route("/dashboard/carpas/eliminar/<string:id>", methods=['POST'])
 @login_required
 def carpas_eliminar(id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('DELETE FROM carpa WHERE id_carpa = %s', (id,))
-    conn.commit()
-    cur.close()
-    conn.close()
+    if current_user.rol == 'admin':
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('DELETE FROM carpa WHERE id_carpa = %s', (id,))
+        conn.commit()
+        cur.close()
+        conn.close()
 
-    flash('¡Carpa eliminada exitosamente!', 'success')
-    return redirect(url_for('carpas_dashboard'))
+        flash('¡Carpa eliminada exitosamente!', 'success')
+        return redirect(url_for('carpas_dashboard'))
+    else:   
+        return redirect(url_for('index'))
 
 #-------------APARTADO LOGIN---------------------------#
+
 @app.route('/login')
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index')) 
     return render_template('login.html')
 
 @app.route('/loguear', methods=['POST'])
@@ -582,11 +640,83 @@ def loguear():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+#------------------RENTAR O SOLICITAR--------------#
+@app.route('/rentar_lonas', methods=['GET', 'POST'])
+@login_required
+def rentar_lonas():
+    if request.method == 'POST':
+        fecha_inicio = request.form.get('fecha_inicio')
+        fecha_fin = request.form.get('fecha_fin')
+        metodo_de_pago = request.form.get('metodo_de_pago')
+        medidas = request.form.get('medidas')
+        color = request.form.get('color')
+
+        # Verificar disponibilidad de lonas
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT cantidad FROM lona WHERE color = %s AND medidas = %s', (color, medidas))
+        lona = cur.fetchone()
+
+        if lona and lona[0] > 0:
+            # Reducir la cantidad en 1
+            cur.execute('UPDATE lona SET cantidad = cantidad - 1 WHERE color = %s AND medidas = %s', (color, medidas))
+
+            # Insertar en la tabla alquila
+            cur.execute('INSERT INTO alquila (fk_cliente, fk_lona, fecha_inicio, fecha_fin, metodo_de_pago, total) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (current_user.id, color, fecha_inicio, fecha_fin, metodo_de_pago, calcular_total()))
+            conn.commit()
+            flash('Solicitud de renta realizada con éxito.', 'success')
+        else:
+            flash('No hay lonas disponibles con las especificaciones seleccionadas.', 'error')
+
+        cur.close()
+        conn.close()
+        return redirect(url_for('index'))
+
+    return render_template('rentar_lonas.html')
+
+@app.route('/rentar_carpas')
+@login_required
+def rentar_carpas():
+    return render_template('rentar_carpas.html')
+
+#------------------VISTAS DE PEDIDOS--------------#
+
+
+@app.route('/dashboard/pedidos/lonas')
+def pedidoslona():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM vista_pedidos_lona ORDER BY id_alquila ASC;")
+    datos = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('pedidos_lonas.html', dato=datos)
+
+@app.route('/dashboard/pedidos/carpas')
+def pedidoscarpa():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM vista_pedidos_carpa ORDER BY id_alquila ASC;")
+    datos = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('pedidos_carpa.html',  dato=datos)
+
+
+
+
+def calcular_total():
+    # Implementar la lógica para calcular el total basado en el precio de la lona y otros factores
+    return 0.0
 
 #------------------PAGINA DE ERROR Y PUERTO--------------#
 
 def pagina_no_encontrada(error):
     return render_template('404.html')
+def acceso_no_autorizado(error):
+ return render_template('401.html')#----------------------------------------------
+
 
 def acceso_no_autorizado(error):
     return redirect(url_for('login'))
