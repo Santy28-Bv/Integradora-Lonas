@@ -36,8 +36,8 @@
 
     <form id="formularioUsuario" action="{{ url_for('formulario_usuario') }}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        
-        <h1 class="color">PARA EMPEZAR A CREAR TU CUENTA AGREGA UN CORREO Y UNA CONTRASEÑA ;)</h1>
+        <h1 class="colorh1 "> REGISTRATE</h1><br>
+        <h2 class="colorh2">PARA EMPEZAR A CREAR TU CUENTA AGREGA UN CORREO Y UNA CONTRASEÑA ;)</h2>
 
         <!-- Alerta para campos vacíos -->
         <div id="alertCamposVacios" class="alert alert-danger mt-3" style="display: none;">
@@ -58,13 +58,13 @@
 
         <!-- Checkbox para ver la contraseña -->
         <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="togglePassword">
-            <label class="form-check-label blancoR" for="togglePassword">Ver contraseña</label>
+            <input type="checkbox" class="form-check-input cuadro" id="togglePassword">
+            <label class="form-check-label blancoR " for="togglePassword">Ver contraseña</label>
         </div>
         
         <!-- Botones para enviar y cancelar -->
         <button type="submit" class="btn borderr opacity colorR">Siguiente</button>
-        <a href="{{ url_for('login') }}" class="btn borderr opacity colorR">Cancelar</a>
+        <a href="{{ url_for('login') }}" class="btn borderh opacity colorR">Cancelar</a>
     </form>
     
     <!-- Scripts de Bootstrap y Validación -->
@@ -111,6 +111,9 @@
     </script>
 
     <style>
+
+
+    
         .border12{
             border-radius: 100px;
             background: rgb(63,94,251);
@@ -124,27 +127,74 @@
 
         .blancoR{
             color: rgb(252, 252, 252);
+            margin-left: 250px;
+            background: rgba(0, 0, 0, 0.808);
+            border-radius: 100px;
+            width: 10%;
+            text-align: center;
+
+        }
+
+        .cuadro{
+            margin-left: 230px;
         }
 
         .borderR{
             color: aliceblue;
             border-radius: 100px;
-            border: 2px solid rgb(255, 255, 255);
+            border: 2px solid rgb(134, 134, 134);
             margin-right: 1px;
+            width: 50%;
+            margin-left: 270px;
+          
         }
 
         .bottonR{
             background: rgba(28, 28, 28, 0.895);
+           
         }
 
         .borderr{
             border-radius: 100px;
             background: linear-gradient(90deg, rgb(23, 57, 227) 0%, rgba(104,59,215,1) 100%);
             text-decoration: none;
+            margin-left: 400px;
         }
 
         .colorR{
             color: rgb(255, 255, 255);
+        }
+
+        .colorh2{
+            color: rgb(255, 255, 255);
+            font-size: 15px;
+            background: rgba(14, 13, 13, 0.87);
+             margin: 5px;
+            padding: 5px;
+            text-align: center;
+            width: 60%;
+            margin-left: 225px;
+            border-radius: 100px;
+
+        }
+
+        .colorh1{
+            color: rgb(255, 255, 255);
+            text-transform: uppercase;
+             background: rgba(0, 0, 0, 0.808);
+             margin: 5px;
+            padding: 5px;
+             width: 40%;
+            text-align: center;
+            margin-left: 330px;
+            border-radius: 100px;
+              
+        }
+        .borderh{
+            background:  linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
+            border-radius: 100px;
+            margin-left: 100px;
+
         }
     </style>
 {% endblock %}

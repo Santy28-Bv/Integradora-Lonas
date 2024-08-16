@@ -1,52 +1,140 @@
-<form action="{{ url_for('rentar_lonas') }}" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-    <!-- Fecha de Inicio -->
-    <div class="form-group">
-      <label for="fecha_inicio">Fecha de solicitud:</label>
-      <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
-    </div>
-  
-    <!-- Fecha de Fin -->
-    <div class="form-group">
-      <label for="fecha_fin">Fecha a devolver:</label>
-      <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
-    </div>
-  
-    <!-- Método de Pago -->
-    <div class="form-group">
-      <label for="inputMetododepago">Método de Pago:</label>
-      <select id="inputMetododepago" class="form-control" name="metodo_de_pago" required>
-        <option value="" selected>Selecciona tu Método de pago</option>
-        <option value="Efectivo">Efectivo</option>
-        <option value="Deposito">Depósito</option>
-      </select>
-    </div>
-  
-    <!-- Selección de Medidas -->
-    <div class="form-group">
-      <label for="inputMedidas">Selecciona las medidas:</label>
-      <select id="inputMedidas" class="form-control" name="medidas" required>
-        <option value="" selected>Selecciona las medidas</option>
-        <option value="10x10">10x10</option>
-        <option value="15x15">15x15</option>
-        <option value="20x20">20x20</option>
-      </select>
-    </div>
-  
-    <!-- Selección de Color -->
-    <div class="form-group">
-      <label for="inputColor">Selecciona el color de la lona:</label>
-      <select id="inputColor" class="form-control" name="color" required>
-        <option value="" selected>Selecciona el color</option>
-        <option value="Blanco">Blanco</option>
-        <option value="Amarillo">Amarillo</option>
-      </select>
-    </div>
-  
-    <!-- Botón de Envío -->
-    <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
-    <a href="{{ url_for('index') }}" class="btn colorI mx-2 border11 opacity">Cancelar</a>
+{% extends 'layout.html' %}
 
-  </form>
-  
+{% block title %} Solicitud lona {% endblock %}
+
+{% block body %}
+<h1 style="
+    text-align: center; 
+    color: rgb(255, 255, 255); 
+    background: rgba(20, 20, 20, 0.9); 
+    padding: 8px; 
+    border-radius: 10px; 
+    max-width: 600px; 
+    margin: 20px auto;
+">SOLICITE SU LONA</h1>
+<form action="{{ url_for('rentar_lonas') }}" method="POST" style="
+    display: flex;
+    flex-direction: column; /* Distribuye los elementos en columnas */
+    gap: 20px; /* Espacio entre campos */
+    background-color: rgba(20, 20, 20, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 600px; /* Ancho máximo del formulario */
+    margin: 0 auto; /* Centrar el formulario horizontalmente */
+">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <!-- Fecha de Inicio -->
+  <div class="form-group">
+    <label for="fecha_inicio" style="color: rgb(160, 209, 44);">Fecha de solicitud:</label>
+    <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required style="
+      color: rgb(255, 255, 255);
+      background: rgba(28, 28, 28, 0.895);
+      border-radius: 100px;
+    ">
+  </div>
+
+  <!-- Fecha de Fin -->
+  <div class="form-group">
+    <label for="fecha_fin" style="color: rgb(160, 209, 44);">Fecha a devolver:</label>
+    <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required style="
+      color: rgb(255, 255, 255);
+      background: rgba(28, 28, 28, 0.895);
+      border-radius: 100px;
+    ">
+  </div>
+
+  <!-- Método de Pago -->
+  <div class="form-group">
+    <label for="inputMetododepago" style="color: rgb(160, 209, 44);">Método de Pago:</label>
+    <select id="inputMetododepago" class="form-control" name="metodo_de_pago" required style="
+      color: rgb(255, 255, 255);
+      background: rgba(28, 28, 28, 0.895);
+      border-radius: 100px;
+    ">
+      <option value="" selected>Selecciona tu Método de pago</option>
+      <option value="Efectivo">Efectivo</option>
+      <option value="Deposito">Depósito</option>
+    </select>
+  </div>
+
+  <!-- Selección de Medidas -->
+  <div class="form-group">
+    <label for="inputMedidas" style="color: rgb(160, 209, 44);">Selecciona las medidas:</label>
+    <select id="inputMedidas" class="form-control" name="medidas" required style="
+      color: rgb(255, 255, 255);
+      background: rgba(28, 28, 28, 0.895);
+      border-radius: 100px;
+    ">
+      <option value="" selected>Selecciona las medidas</option>
+      <option value="7x10">7x10</option>
+      <option value="7x20">7x20</option>
+      <option value="7x30">7x30</option>
+      <option value="10x10">10x10</option>
+      <option value="10x15">10x15</option>
+      <option value="10x20">10x20</option>
+      <option value="10x30">10x30</option>
+      <option value="10x45">10x45</option>
+      <option value="10x60">10x60</option>
+      <option value="15x20">15x20</option>
+      <option value="15x30">15x30</option>
+      <option value="15x40">15x40</option>
+      <option value="15x50">15x50</option>
+      <option value="15x60">15x60</option>
+      <option value="15x75">15x75</option>
+      <option value="20x20">20x20</option>
+      <option value="20x30">20x30</option>
+      <option value="20x40">20x40</option>
+      <option value="20x50">20x50</option>
+      <option value="30x30">30x30</option>      
+      <option value="30x40">30x40</option>
+      <option value="30x50">30x50</option>
+      <option value="30x60">30x60</option>
+      <option value="30x70">30x70</option>
+      <option value="30x80">30x80</option>
+      <option value="40x40">40x40</option>
+      <option value="40x50">40x50</option>
+      <option value="40x60">40x60</option>
+      <option value="40x70">40x70</option>
+      <option value="40x80">40x80</option>
+      
+
+
+    </select>
+  </div>
+
+  <!-- Selección de Color -->
+  <div class="form-group">
+    <label for="inputColor" style="color: rgb(160, 209, 44);">Selecciona el color de la lona:</label>
+    <select id="inputColor" class="form-control" name="color" required style="
+      color: rgb(255, 255, 255);
+      background: rgba(28, 28, 28, 0.895);
+      border-radius: 100px;
+    ">
+      <option value="" selected>Selecciona el color</option>
+      <option value="Blanca">Blanco</option>
+      <option value="Amarilla">Amarillo</option>
+    </select>
+  </div>
+
+  <!-- Botón de Envío -->
+  <button type="submit" class="btn btn-primary" style="
+    background: linear-gradient(90deg, rgb(23, 57, 227) 0%, rgb(73, 27, 189) 100%);
+    border-radius: 100px;
+    margin: 5px;
+    padding: 5px;
+    text-decoration: none;
+  ">Enviar Solicitud</button>
+  <a href="{{ url_for('index') }}" class="btn colorI mx-2 border11 opacity" style="
+    background: linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
+    text-align: center;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 100px;
+    text-decoration: none;
+    color: rgb(255, 255, 255); /* Color de texto blanco */
+  ">Cancelar</a>
+</form>
+
+{% endblock %}

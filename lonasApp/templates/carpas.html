@@ -4,18 +4,80 @@
 
 {% block body %}
 
-<a href="{{ url_for('carpas_formulario') }}" class="btn btn-primary mb-3"><i class="fas fa-plus-circle"></i> Agregar Carpa</a>
+<h1 class="blanco borde">AGREGA TUS CARPAS</h1>
+<br>
+<a href="{{ url_for('carpas_formulario') }}" class="btn btn-primary mb-3 border opacity"><i class="fas fa-plus-circle"></i> Agregar Carpa</a>
+<style>
+    .border{
+        border-radius: 100px;
+        background: linear-gradient(90deg, rgba(20, 12, 110, 0.98) 0%, rgba(29, 18, 161, 0.98) 31%, rgba(38, 23, 212, 0.98) 62%);
+        border: solid 0px;
+    }
+
+    .opacity:hover{
+        opacity: .8;
+    }
+</style>
+
+<table class="table table-striped table-sm table-hover">
+    <style>
+         body{
+        background-image: url('/static/img/lonaa.png');
+        background-attachment: fixed; 
+        background-position: center center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        
+     }
+     body::before{
+        
+        content: " ";
+       position: fixed;
+        top:300;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(19, 18, 18, 0.363);
+        pointer-events: none;
+
+     
+    }
+    .borde{
+    
+            background: rgba(0, 0, 0, 0.779);
+               text-align: center;
+              margin: 5px;
+              padding: 10px;
+              border-radius: 100px;
+               text-transform: uppercase;
+                font-size: 40px;
+                width: 70%;
+                margin-left: 100px;
+
+           }
+    
+
+    .table{     
+        background: linear-gradient(90deg, rgba(30, 30, 36, 0.906) 0%, rgba(54, 53, 55, 0.911) 100%);}
+    </style>
+    
 
 <table class="table table-striped table-sm table-hover">
     <thead>
         <tr>
-            <th class="text-center">Editar</th>
-            <th class="text-center">Eliminar</th>
-            <th>Color</th>
-            <th>Cantidad</th>
-            <th>Precio de Renta</th>
-            <th>Medidas</th>
-            <th>Unidad de Medida</th>
+            <th class="text-center blanco">Editar</th>
+            <th class="text-center blanco">Eliminar</th>
+            <th class="blanco">Color</th>
+            <th class="blanco">Cantidad</th>
+            <th class="blanco">Precio de Renta</th>
+            <th class="blanco">Medidas</th>
+            <th class="blanco">Unidad de Medida</th>
+            <style>
+                .blanco{
+                    color: rgba(255, 255, 255, 0.781);
+                }
+            </style>
+        </tr>
         </tr>
     </thead>
     <tbody>
@@ -23,23 +85,46 @@
             {% for carpa in carpas %}
                 <tr>
                     <td class="text-center">
-                        <a href="{{ url_for('carpas_editar', id=carpa.id_carpa) }}" class="btn btn-warning btn-sm mb-1">
+                        <a href="{{ url_for('carpas_editar', id=carpa.id_carpa) }}" class="btn btn-sm mb-1 borderC azulC opacity">
                             <i class="fas fa-edit"></i> Editar
                         </a>
                     </td>
                     <td class="text-center">
                         <form action="{{ url_for('carpas_eliminar', id=carpa.id_carpa) }}" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta Carpa?');">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-danger btn-sm mb-1">
+                            <button type="submit" class="btn btn-sm mb-1 borderC rojoC opacity">
                                 <i class="fas fa-trash-alt"></i> Eliminar
+
+                                <style>
+                                    .borderC{
+                                        border-radius: 100px;
+                                    }
+
+                                    .azulC{
+                                        color: aliceblue;
+                                        background: linear-gradient(90deg, rgba(20, 12, 110, 0.98) 0%, rgba(29, 18, 161, 0.98) 31%, rgba(38, 23, 212, 0.98) 62%);
+                                        text-decoration: none;
+                                        padding: 5px 13px;
+                                      
+                                        
+                                    }
+
+                                    .rojoC{
+                                        color: aliceblue;
+                                        background: linear-gradient(90deg, rgb(90, 10, 10) 0%, rgb(210, 60, 60) 100%);
+                                        text-decoration: none;
+                                    }
+
+                                    
+                                </style>
                             </button>
                         </form>
                     </td>
-                    <td>{{ carpa['color'] }}</td>
-                    <td>{{ carpa['cantidad'] }}</td>
-                    <td>{{ carpa['precio_renta'] }}</td>
-                    <td>{{ carpa['medidas'] }}</td>
-                    <td>Metros</td>
+                    <td class="blanco">{{ carpa['color'] }}</td>
+                    <td class="blanco">{{ carpa['cantidad'] }}</td>
+                    <td class="blanco">{{ carpa['precio_renta'] }}</td>
+                    <td class="blanco">{{ carpa['medidas'] }}</td>
+                    <td class="blanco">Metros</td>
                 </tr>
             {% endfor %}
         {% else %}

@@ -1,40 +1,46 @@
-{% extends './layout_admin.html' %}
-
-{% block title %} {{ titulo }} {% endblock %}
-
+{% extends "layout_admin.html" %}
+{% block title %}
+    Editar Cliente
+{% endblock %}
 {% block body %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-
-    <h3>Editar Carpa</h3>
-    <form method="post" action="{{ url_for('carpas_actualizar', id=carpa[0]) }}" enctype="multipart/form-data" class="row g-3">
+<div class="container">
+    <h1>Editar Cliente</h1>
+    <form method="POST" action="{{ url_for('EditarDatosCliente', id_cliente=datos_cliente[0]) }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="color" placeholder="Color" name="color" value="{{ carpa[1] }}">
-            <label for="color">Color</label>
+        <div class="form-group">
+            <label for="Nombre">Nombre</label>
+            <input type="text" class="form-control" id="Nombre" name="Nombre" value="{{ datos_cliente[1] }}">
         </div>
-        
-        <div class="form-floating mb-3">
-            <input type="number" class="form-control" id="cantidad" placeholder="Cantidad" name="cantidad" value="{{ carpa[2] }}">
-            <label for="cantidad">Cantidad</label>
+        <div class="form-group">
+            <label for="Apellido_paterno">Apellido Paterno</label>
+            <input type="text" class="form-control" id="Apellido_paterno" name="Apellido_paterno" value="{{ datos_cliente[2] }}">
         </div>
-        
-        <div class="form-floating mb-3">
-            <input type="text" step="0.01" class="form-control" id="precio_renta" placeholder="Precio de Renta" name="precio_renta" value="{{ carpa[3] }}">
-            <label for="precio_renta">Precio de Renta</label>
+        <div class="form-group">
+            <label for="Apellido_materno">Apellido Materno</label>
+            <input type="text" class="form-control" id="Apellido_materno" name="Apellido_materno" value="{{ datos_cliente[3] }}">
         </div>
-        
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="medidas" placeholder="medidas (m)" name="medidas" value="{{ carpa[4] }}">
-            <label for="medidas">medidas (m)</label>
+        <div class="form-group">
+            <label for="Direccion">Dirección</label>
+            <input type="text" class="form-control" id="Direccion" name="Direccion" value="{{ datos_cliente[4] }}">
         </div>
-        
-      
-        
-        <div class="d-flex gap-2 justify-content-center py-5">
-            <button class="btn btn-primary align-items-center" type="submit">Guardar</button>
-            <a class="btn btn-outline-danger align-items-center" href="{{ url_for('carpas_dashboard') }}">Cancelar</a>
+        <div class="form-group">
+            <label for="Estado">Estado</label>
+            <input type="text" class="form-control" id="Estado" name="Estado" value="{{ datos_cliente[5] }}">
         </div>
+        <div class="form-group">
+            <label for="Municipio">Municipio</label>
+            <input type="text" class="form-control" id="Municipio" name="Municipio" value="{{ datos_cliente[6] }}">
+        </div>
+        <div class="form-group">
+            <label for="Telefono">Teléfono</label>
+            <input type="text" class="form-control" id="Telefono" name="Telefono" value="{{ datos_cliente[7] }}">
+        </div>
+        <div class="form-group">
+            <label for="Email">Email</label>
+            <input type="email" class="form-control" id="Email" name="Email" value="{{ datos_cliente[8] }}">
+        </div>
+        <button type="submit" class="btn btn-sucess">Guardar cambios</button>
+        <a href="{{ url_for('dashboardClienteMisDatos') }}" class="btn btn-dangrt">Cancelar</a>
     </form>
+</div>
 {% endblock %}

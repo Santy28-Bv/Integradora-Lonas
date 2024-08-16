@@ -3,37 +3,71 @@
 {% block title %} Solicitud Carpa {% endblock %}
 
 {% block body %}
-
-<h1>SOLICITE SU CARPA</h1>
+<h1 style="
+    text-align: center; 
+    color: rgb(206, 215, 32); 
+    background: rgba(20, 20, 20, 0.9); 
+    padding: 8px; 
+    border-radius: 10px; 
+    max-width: 600px; 
+    margin: 20px auto;
+">SOLICITE SU CARPA</h1>
 <!-- Formulario de Solicitud -->
-<form action="" method="POST">
-  
+<form action="{{ url_for('rentar_carpas') }}" method="POST" style="
+    display: flex;
+    flex-direction: column; /* Distribuye los elementos en columnas */
+    gap: 20px; /* Espacio entre campos */
+    background-color: rgba(20, 20, 20, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 600px; /* Ancho máximo del formulario */
+    margin: 0 auto; /* Centrar el formulario horizontalmente */
+">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
   <!-- Fecha de Inicio -->
   <div class="form-group">
-    <label for="fecha_inicio">Fecha de solicitud:</label>
-    <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+    <label for="fecha_inicio" style="color: rgb(160, 209, 44);">Fecha de solicitud:</label>
+    <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required style="
+      color: rgb(255, 255, 255);
+      background: rgba(28, 28, 28, 0.895);
+      border-radius: 100px;
+    ">
   </div>
 
   <!-- Fecha de Fin -->
   <div class="form-group">
-    <label for="fecha_fin">Fecha a devolver:</label>
-    <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
+    <label for="fecha_fin" style="color: rgb(160, 209, 44);">Fecha a devolver:</label>
+    <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required style="
+      color: rgb(255, 255, 255);
+      background: rgba(28, 28, 28, 0.895);
+      border-radius: 100px;
+    ">
   </div>
 
   <!-- Método de Pago -->
   <div class="form-group">
-    <label for="inputMetododepago">Método de Pago:</label>
-    <select id="inputMetododepago" class="form-control" name="metodo_de_pago" required>
+    <label for="inputMetododepago" style="color: rgb(160, 209, 44);">Método de Pago:</label>
+    <select id="inputMetododepago" class="form-control" name="metodo_de_pago" required style="
+      color: rgb(255, 255, 255);
+      background: rgba(28, 28, 28, 0.895);
+      border-radius: 100px;
+    ">
       <option value="" selected>Selecciona tu Método de pago</option>
       <option value="Efectivo">Efectivo</option>
       <option value="Deposito">Depósito</option>
     </select>
   </div>
 
+
   <!-- Selección de Medidas -->
   <div class="form-group">
-    <label for="inputMedidas">Selecciona las medidas:</label>
-    <select id="inputMedidas" class="form-control" name="medidas" required>
+    <label for="inputMedidas" style="color: rgb(160, 209, 44);">Selecciona las medidas:</label>
+    <select id="inputMedidas" class="form-control" name="medidas" required style="
+      color: rgb(255, 255, 255);
+      background: rgba(28, 28, 28, 0.895);
+      border-radius: 100px;
+    ">
       <option value="" selected>Selecciona las medidas</option>
       <option value="10x10">10x10</option>
       <option value="15x15">15x15</option>
@@ -41,9 +75,37 @@
     </select>
   </div>
 
+  <div class="form-group">
+    <label for="inputColor" style="color: rgb(160, 209, 44);">Color:</label>
+    <select id="inputColor" class="form-control" name="color" required style="
+      color: rgb(255, 255, 255);
+      background: rgb(28, 28, 28, 0.895); /* Fondo blanco para el <select> */
+      border-radius: 100px;
+      opacity: 0.5; /* Para hacer el <select> parecer inhabilitado */
+    " disabled>
+      <option value="Blanca" selected>Blanco</option>
+      <!-- Puedes agregar más opciones si es necesario, pero estarán inhabilitadas -->
+    </select>
+</div>
+
+
   <!-- Botón de Envío -->
-  <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
-  <a href="{{ url_for('index') }}" class="btn colorI mx-2 border11 opacity">Cancelar</a>
+  <button type="submit" class="btn btn-primary" style="
+    background: linear-gradient(90deg, rgb(23, 57, 227) 0%, rgb(73, 27, 189) 100%);
+    border-radius: 100px;
+    margin: 5px;
+    padding: 5px;
+    text-decoration: none;
+  ">Enviar Solicitud</button>
+  <a href="{{ url_for('index') }}" class="btn colorI mx-2 border11 opacity" style="
+    background: linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
+    text-align: center;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 100px;
+    text-decoration: none;
+    color: rgb(255, 255, 255); /* Color de texto blanco */
+  ">Cancelar</a>
 
 </form>
 

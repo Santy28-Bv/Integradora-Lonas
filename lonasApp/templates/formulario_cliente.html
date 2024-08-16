@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
+    <br>
+    <h2 class="blancorejis">INGRESA TUS DATOS</h2><br>
     <form id="formularioUsuario" action="{{ url_for('Cliente') }}" method="POST">
         <div class="col-md-6">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -24,24 +26,81 @@
                 Por favor, ingresa un número de teléfono válido (solo números).
             </div>
     
-            <label for="inputNombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="inputNombre" name="nombre" placeholder="Ingresa tu Nombre">
+            <label for="inputNombre" class="form-label blancologin nombreiz ">Nombre</label>
+            <input type="text" class="form-control blancologin grisblock" id="inputNombre" name="nombre" placeholder="Ingresa tu Nombre">
         </div>
         <div class="col-md-6">
-            <label for="inputApellido" class="form-label">Apellido Paterno</label>
-            <input type="text" class="form-control" id="inputApellido" name="apellido_paterno" placeholder="Ingresa tu Apellido Paterno">
+            <label for="inputApellido" class="form-label blancologin nombreiz">Apellido Paterno</label>
+            <input type="text" class="form-control blancologin grisblock" id="inputApellido" name="apellido_paterno" placeholder="Ingresa tu Apellido Paterno">
         </div>
-        <div class="col-12">
-            <label for="inputApellidoMaterno" class="form-label">Apellido Materno</label>
-            <input type="text" class="form-control" id="inputApellidoMaterno" name="apellido_materno" placeholder="Ingresa tu Apellido Materno">
+        <div class="col-6">
+            <label for="inputApellidoMaterno" class="form-label blancologin nombreiz">Apellido Materno</label>
+            <input type="text" class="form-control blancologin grisblock" id="inputApellidoMaterno" name="apellido_materno" placeholder="Ingresa tu Apellido Materno">
         </div>
-        <div class="col-12">
-            <label for="inputDireccion" class="form-label">Dirección</label>
-            <input type="text" class="form-control" id="inputDireccion" name="direccion" placeholder="Ingresa tu Dirección">
+        <div class="col-6">
+            <label for="inputDireccion" class="form-label blancologin nombreiz">Dirección</label>
+            <input type="text" class="form-control blancologin grisblock" id="inputDireccion" name="direccion" placeholder="Ingresa tu Dirección">
+            <style>
+
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Espacio entre filas */
+    justify-content: center;
+    background-color: rgba(20, 20, 20, 0.74);
+    padding: 20px;
+    border-radius: 15px;
+}
+                .blancologin{
+                    color: rgb(255, 255, 255);
+                }
+                .grisblock{
+                background: rgba(28, 28, 28, 0.895);
+                border-radius: 100px;
+                margin-left: 20px;
+            }
+
+           
+            .grisblock:focus{
+                background-color:  rgba(28, 28, 28, 0.895);
+                
+            }
+
+            .nombreiz{
+                background: rgba(9, 9, 9, 0.895);
+                border-radius: 100px;
+                width: 30%;
+                text-align: center;
+                margin: 5px;
+                padding: 5px;
+                margin-left: 20px;
+            }
+
+            .nombreizz{
+                background: rgba(9, 9, 9, 0.895);
+                border-radius: 100px;
+                width: 100%;
+                text-align: center;
+                margin-left: 20px;
+            }
+
+            .blancorejis{
+                color: rgb(255, 255, 255);
+                background: rgba(0, 0, 0, 0.808);
+                text-align: center;
+                width: 50%;
+                border-radius: 100px;
+                margin: 5px;
+                padding: 5px;
+                margin-left: 290px;
+
+            }
+                
+            </style>
         </div>
-        <div class="col-md-4">
-            <label for="inputEstado" class="form-label">Estado</label>
-            <select id="inputEstado" class="form-control" name="estado">
+        <div class="col-md-6">
+            <label for="inputEstado" class="form-label blancologin nombreiz">Estado</label>
+            <select id="inputEstado" class="form-control grisblock" name="estado">
                 <option value="" selected>Selecciona tu estado</option>
                 <option value="Aguascalientes">Aguascalientes</option>
                 <option value="Baja California">Baja California</option>
@@ -77,22 +136,22 @@
                 <option value="Zacatecas">Zacatecas</option>
             </select>
         </div>
-        <div class="col-md-2">
-            <label for="inputMunicipio" class="form-label">Municipio</label>
-            <input type="text" class="form-control" id="inputMunicipio" name="municipio" placeholder="Tu municipio">
+        <div class="col-md-6">
+            <label for="inputMunicipio" class="form-label blancologin nombreiz">Municipio</label>
+            <input type="text" class="form-control blancologin grisblock " id="inputMunicipio" name="municipio" placeholder="Tu municipio">
         </div>
-        <div class="col-12">
-            <label for="inputTelefono" class="form-label">Teléfono</label>
-            <input type="text" class="form-control" id="inputTelefono" name="telefono" placeholder="Ingresa tu número de teléfono">
+        <div class="col-6">
+            <label for="inputTelefono" class="form-label blancologin nombreiz">Teléfono</label>
+            <input type="text" class="form-control blancologin grisblock" id="inputTelefono" name="telefono" placeholder="Ingresa tu número de teléfono">
         </div>
         <div class="col-md-6">
-            <label for="inputUser" class="form-label">Nombre de Usuario</label>
-            <input type="text" class="form-control" id="inputUser" name="username" placeholder="@Juanito_27">
-            <small id="inputUser" class="form-text text-muted">Añade un Nombre de Usuario incluyendo caracteres especiales ($, @, ., etc)</small>
+            <label for="inputUser" class="form-label blancologin nombreiz">Nombre de Usuario</label>
+            <input type="text" class="form-control blancologin grisblock" id="inputUser" name="username" placeholder="@Juanito_27">
+            <small id="inputUser" class="form-text  blancologin nombreizz" >Añade un Nombre de Usuario incluyendo caracteres especiales ($, @, ., etc)</small>
         </div>
         <div class="col-12">
             <button type="submit" class="btn btn-primary border13 opacity">Siguiente</button>
-            <button type="reset" class="btn btn-danger border13 opacity">Cancelar</button>
+            <button type="reset" class="btn btn-danger border14 opacity">Cancelar</button>
         </div>
     </form>
     <style>
@@ -100,13 +159,26 @@
             border-radius: 100px;
             background: rgb(63,94,251);
             background: linear-gradient(90deg, rgb(23, 57, 227) 0%, rgba(104,59,215,1) 100%);
-            border: 2px solid rgb(255, 255, 255);
+            margin-left: 400px;
+            
 
+        }
+
+        .border14{
+            background:  linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
+            border-radius: 100px;
+            margin-left: 50px;
+           
         }
 
         .opacity:hover{
             opacity: .8;
         }
+
+        .blancologin{
+            color: rgb(255, 255, 255);
+        }
+
 
     </style>
     
@@ -139,5 +211,6 @@
         }
     });
 </script>
+
 
 {% endblock %}

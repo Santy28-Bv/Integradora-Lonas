@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, request, flash, Blueprint, jsonify, session 
-from psycopg2.extras import RealDictCursor
+from psycopg2.extras import RealDictCursor, DictCursor
 import os
 import uuid
 import psycopg2
@@ -65,12 +65,7 @@ def get_db_connection():
 
 @app.route("/")
 def index():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM alquiladores_datos ORDER BY id_alquila ASC;")
-    datos = cur.fetchall()
-    cur.close()
-    conn.close()
+  
     return render_template('index.html')
 
 @app.route("/about-us")
@@ -640,40 +635,94 @@ def loguear():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+
+
+
+
 #------------------RENTAR O SOLICITAR--------------#
 @app.route('/rentar_lonas', methods=['GET', 'POST'])
 @login_required
 def rentar_lonas():
     if request.method == 'POST':
-        fecha_inicio = request.form.get('fecha_inicio')
-        fecha_fin = request.form.get('fecha_fin')
-        metodo_de_pago = request.form.get('metodo_de_pago')
-        medidas = request.form.get('medidas')
-        color = request.form.get('color')
+        try:
+            # Captura de datos del formulario
+            fecha_inicio = datetime.strptime(request.form['fecha_inicio'], '%Y-%m-%d')
+            fecha_fin = datetime.strptime(request.form['fecha_fin'], '%Y-%m-%d')
+            metodo_pago = request.form['metodo_de_pago']
+            medidas = request.form['medidas']
+            color = request.form['color']
+            correo_cliente = current_user.correo
 
-        # Verificar disponibilidad de lonas
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute('SELECT cantidad FROM lona WHERE color = %s AND medidas = %s', (color, medidas))
-        lona = cur.fetchone()
+            print("Datos capturados del formulario:")
+            print(f"Fecha Inicio: {fecha_inicio}, Fecha Fin: {fecha_fin}, Método de Pago: {metodo_pago}")
+            print(f"Medidas: {medidas}, Color: {color}, Correo Cliente: {correo_cliente}")
 
-        if lona and lona[0] > 0:
-            # Reducir la cantidad en 1
-            cur.execute('UPDATE lona SET cantidad = cantidad - 1 WHERE color = %s AND medidas = %s', (color, medidas))
+            # Establecer conexión a la base de datos
+            conn = get_db_connection()
+            cur = conn.cursor()
 
-            # Insertar en la tabla alquila
-            cur.execute('INSERT INTO alquila (fk_cliente, fk_lona, fecha_inicio, fecha_fin, metodo_de_pago, total) VALUES (%s, %s, %s, %s, %s, %s)',
-                        (current_user.id, color, fecha_inicio, fecha_fin, metodo_de_pago, calcular_total()))
+            # Verificar disponibilidad de la lona
+            cur.execute("SELECT cantidad, id_lona, precio_renta FROM lona WHERE medidas = %s AND color = %s", (medidas, color))
+            result = cur.fetchone()
+            print("Resultado de la consulta de disponibilidad de lona:", result)
+
+            if result is None or result[0] <= 0:
+                flash('La lona solicitada no está disponible.', 'error')
+                return redirect(url_for('rentar_lonas'))
+
+            cantidad, id_lona, precio_renta = result
+            print(f"Cantidad disponible: {cantidad}, ID Lona: {id_lona}, Precio Renta: {precio_renta}")
+
+            # Recuperar el id_cliente basado en el correo del cliente
+            cur.execute("SELECT id_cliente FROM cliente JOIN usuario ON cliente.fk_usuario = usuario.id_user WHERE usuario.correo = %s", (correo_cliente,))
+            id_cliente = cur.fetchone()
+            print("Resultado de la consulta del ID del cliente:", id_cliente)
+
+            if id_cliente is None:
+                flash('No se encontró el cliente asociado a este correo.', 'error')
+                return redirect(url_for('rentar_lonas'))
+
+            id_cliente = id_cliente[0]
+            print(f"ID Cliente: {id_cliente}")
+
+            # Calcular el costo total
+            dias_alquiler = (fecha_fin - fecha_inicio).days
+            recargo = 0
+            if fecha_fin.date() > datetime.now().date():  # Convertir fecha_fin a date
+                recargo = (fecha_fin.date() - datetime.now().date()).days * 300
+
+            total = precio_renta + recargo
+
+            # Insertar los datos en la tabla alquila (sin color y medidas)
+            cur.execute("""
+                INSERT INTO alquila (fk_cliente, fk_lona, fecha_inicio, fecha_fin, estatus, metodo_de_pago, total)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                RETURNING id_alquila;
+            """, (id_cliente, id_lona, fecha_inicio, fecha_fin, 'En proceso', metodo_pago, total))
+
+            id_alquila = cur.fetchone()
+            print(f"ID de la nueva solicitud de alquiler: {id_alquila}")
+
+            # Actualizar la cantidad de lonas disponibles
+            cur.execute("UPDATE lona SET cantidad = cantidad - 1 WHERE id_lona = %s", (id_lona,))
+            print(f"Cantidad de lona actualizada para ID Lona: {id_lona}")
+
             conn.commit()
-            flash('Solicitud de renta realizada con éxito.', 'success')
-        else:
-            flash('No hay lonas disponibles con las especificaciones seleccionadas.', 'error')
+            flash('Solicitud realizada con éxito.', 'success')
 
-        cur.close()
-        conn.close()
-        return redirect(url_for('index'))
+        except Exception as e:
+            print(f"Error durante la ejecución: {e}")
+            conn.rollback()
+            flash(f'Error al realizar la solicitud: {e}', 'error')
+
+        finally:
+            cur.close()
+            conn.close()
 
     return render_template('rentar_lonas.html')
+
 
 @app.route('/rentar_carpas')
 @login_required
@@ -681,17 +730,135 @@ def rentar_carpas():
     return render_template('rentar_carpas.html')
 
 #------------------VISTAS DE PEDIDOS--------------#
-
-
 @app.route('/dashboard/pedidos/lonas')
-def pedidoslona():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM vista_pedidos_lona ORDER BY id_alquila ASC;")
-    datos = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('pedidos_lonas.html', dato=datos)
+@login_required
+def pedidos_lonas():
+    if current_user.rol == 'admin':
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
+
+        sql_count = 'SELECT COUNT(*) FROM vista_pedidos_lona;'
+        sql_lim = 'SELECT * FROM vista_pedidos_lona ORDER BY id_alquila ASC LIMIT %s OFFSET %s;'
+
+        paginado = paginador(sql_count, sql_lim, page, per_page)
+        
+        # Imprime los datos para ver qué está obteniendo
+        print("Datos obtenidos: ", paginado[0])
+        print("Página actual: ", paginado[1])
+        print("Registros por página: ", paginado[2])
+        print("Total de registros: ", paginado[3])
+        print("Total de páginas: ", paginado[4])
+
+        return render_template(
+            'pedidos_lonas.html',
+            titulo="Pedidos de Lonas",
+            dato=paginado[0],
+            page=paginado[1],
+            per_page=paginado[2],
+            total_items=paginado[3],
+            total_pages=paginado[4]
+        )
+@app.route('/update_status/<int:id>', methods=['POST'])
+def update_status(id):
+    try:
+        estatus = request.form['estatus']
+    except KeyError:
+        return "El campo 'estatus' no se encontró en la solicitud", 400
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Obtener el estatus actual del registro
+        cur.execute("SELECT estatus FROM alquila WHERE id_alquila = %s", (id,))
+        current_status = cur.fetchone()
+
+        if current_status is None:
+            flash('Registro no encontrado.', 'error')
+            return redirect(url_for('pedidos_lonas'))
+
+        current_status = current_status[0]
+
+        # Si el estatus cambia a 'Devuelta', actualizamos el estatus primero
+        if estatus == 'Devuelta' and current_status != 'Devuelta':
+            # Actualizar el estatus a 'Devuelta'
+            cur.execute("""
+                UPDATE alquila
+                SET estatus = %s
+                WHERE id_alquila = %s;
+            """, (estatus, id))
+            conn.commit()
+            flash('Estado actualizado a "Devuelta". Ahora confirme si desea eliminar el registro.', 'warning')
+
+            # Redirigir para confirmar la eliminación
+            return redirect(url_for('confirm_delete', id=id))
+
+        else:
+            # Actualizar el estatus normalmente
+            cur.execute("""
+                UPDATE alquila
+                SET estatus = %s
+                WHERE id_alquila = %s;
+            """, (estatus, id))
+            conn.commit()
+            flash('Estado actualizado con éxito.', 'success')
+
+    except Exception as e:
+        print(f"Error durante la actualización: {e}")
+        conn.rollback()
+        flash(f'Error al actualizar el estado: {e}', 'error')
+
+    finally:
+        cur.close()
+        conn.close()
+
+    return redirect(url_for('pedidos_lonas'))
+
+
+@app.route('/confirm_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def confirm_delete(id):
+    if request.method == 'POST':
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+
+            # Recuperar los datos del alquiler para obtener la lona asociada
+            cur.execute("SELECT fk_lona FROM alquila WHERE id_alquila = %s", (id,))
+            alquiler = cur.fetchone()
+
+            if alquiler is None:
+                flash('No se encontró el alquiler.', 'error')
+                return redirect(url_for('pedidos_lonas'))
+
+            id_lona = alquiler[0]
+
+            # Actualizar la cantidad de lonas disponibles
+            cur.execute("UPDATE lona SET cantidad = cantidad + 1 WHERE id_lona = %s", (id_lona,))
+            print(f"Cantidad de lona actualizada para ID Lona: {id_lona}")
+
+            # Eliminar el registro de alquiler
+            cur.execute("DELETE FROM alquila WHERE id_alquila = %s", (id,))
+            print(f"Registro de alquiler con ID {id} eliminado.")
+
+            conn.commit()
+            flash('Lona devuelta y cantidad actualizada con éxito.', 'success')
+
+        except Exception as e:
+            print(f"Error durante la ejecución: {e}")
+            conn.rollback()
+            flash(f'Error al devolver la lona: {e}', 'error')
+
+        finally:
+            cur.close()
+            conn.close()
+
+        return redirect(url_for('pedidos_lonas'))
+
+    # Renderizar la página de confirmación
+    return render_template('confirm_delete.html', id=id)
+
+
 
 @app.route('/dashboard/pedidos/carpas')
 def pedidoscarpa():
@@ -704,9 +871,6 @@ def pedidoscarpa():
     return render_template('pedidos_carpa.html',  dato=datos)
 
 
-def calcular_total():
-    # Implementar la lógica para calcular el total basado en el precio de la lona y otros factores
-    return 0.0
 
 
 @app.route('/Contactanos')
@@ -733,7 +897,8 @@ if __name__ == '__main__':
     app.run(debug=True, port=5000)
     
     #activar entorno         vistual.venv\Scripts\activate
-    #correr aplicacion       python app\app.py run
-    #                        flask --app app\app.py run 
-    
-    
+    #correr aplicacion       python app\app.py run      
+    #                        flask --app app\app.py run
+
+
+        #correr aplicacion       python LonasApp\LonasApp.py run
