@@ -3,25 +3,21 @@
 {% block body %}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-
-
 <h3 class="centro2">Formulario de lonas</h3>
 <br>
 <style>
-    body{
-           background-image: url('/static/img/lonaa.png');
-           background-attachment: fixed; 
-           background-position: center center;
-           background-size: cover;
-           background-repeat: no-repeat;
-           
-        }
-      
+    body {
+        background-image: url('/static/img/lonaa.png');
+        background-attachment: fixed; 
+        background-position: center center;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
 </style>
-<form action="{{ url_for('carpas_crear') }}" method="post" class="border2">
+<form action="{{ url_for('lona_crear') }}" method="post" enctype="multipart/form-data" class="border2">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form-group mb-3">
-        <label for="formFile" class="form-label centro1 blan">Foto de carpa</label>
+        <label for="formFile" class="form-label centro1 blan">Foto de lona</label>
         <input class="form-control centro griss border" type="file" id="formFile" name="Foto" required accept="image/png, image/jpeg">
     </div>
 
@@ -39,87 +35,78 @@
     </div>
     <div class="form-floating mb-3">
         <input type="text" class="form-control centro blan griss border" id="medidasInput" placeholder="medidas (metros)" name="medidas">
-        <label class="centro1 " for="medidasInput">medidas (metros)</label>
+        <label class="centro1" for="medidasInput">medidas (metros)</label>
     </div>
-   
+
     <div class="d-flex gap-2 justify-content-center py-5">
         <button class="btn border opacity blue align-items-center" type="submit">Guardar</button>
         <a class="btn border opacity red align-items-center" href="{{ url_for('lonas_dashboard') }}">Cancelar</a>
     </div>
     <style>
-        .centro{
-           width: 60%; /******** este atributo es para recortar los input de formularios*************/
-           margin-left: 200px; /******** este atributo es para sentar el formulario **********/
-               }
-       
-       .centro1{
-           margin-left: 200px;
-           color: rgb(255, 255, 255);
-           background: rgba(0, 0, 0, 0.849);
-           border-radius: 100px;
-           width: 13%;
-           text-align: center;
-       
-       }
-           
+        .centro {
+            width: 60%;
+            margin-left: 200px;
+        }
 
+        .centro1 {
+            margin-left: 200px;
+            color: rgb(255, 255, 255);
+            background: rgba(0, 0, 0, 0.849);
+            border-radius: 100px;
+            width: 13%;
+            text-align: center;
+        }
 
-           .blan{
-               color: rgb(255, 255, 255);
-           }
-           .centro2{
-               background: rgba(0, 0, 0, 0.779);
-               text-align: center;
-              margin: 5px;
-              padding: 10px;
-              border-radius: 100px;
-               color: rgb(255, 255, 255);
-               text-transform: uppercase;
-                font-size: 40px;
-                width: 70%;
-                margin-left: 140px;
-           }
+        .blan {
+            color: rgb(255, 255, 255);
+        }
 
-           .border{
-               border-radius: 100px;
-               color: rgb(255, 255, 255);
+        .centro2 {
+            background: rgba(0, 0, 0, 0.779);
+            text-align: center;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 100px;
+            color: rgb(255, 255, 255);
+            text-transform: uppercase;
+            font-size: 40px;
+            width: 70%;
+            margin-left: 140px;
+        }
 
-           }
+        .border {
+            border-radius: 100px;
+            color: rgb(255, 255, 255);
+        }
 
-           .opacity:hover{
-               opacity: .8;
-           }
+        .opacity:hover {
+            opacity: .8;
+        }
 
-           .blue{
-               background: linear-gradient(90deg, rgba(20, 12, 110, 0.98) 0%, rgba(29, 18, 161, 0.98) 31%, rgba(38, 23, 212, 0.98) 62%);
-               margin-left: -30px;
-              
-               
-           }
+        .blue {
+            background: linear-gradient(90deg, rgba(20, 12, 110, 0.98) 0%, rgba(29, 18, 161, 0.98) 31%, rgba(38, 23, 212, 0.98) 62%);
+            margin-left: -30px;
+        }
 
-           .red{
-               background:  linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
-               margin-left: 50px;
-              margin: 0px 0px 0px 100px;
-              
-           }
+        .red {
+            background: linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
+            margin-left: 50px;
+            margin: 0px 0px 0px 100px;
+        }
 
-           .griss{
-               background: linear-gradient(90deg, rgba(7, 7, 8, 0.836) 0%, rgba(54, 53, 55, 0.89) 100%);
-              
+        .griss {
+            background: linear-gradient(90deg, rgba(7, 7, 8, 0.836) 0%, rgba(54, 53, 55, 0.89) 100%);
+        }
 
-           }
-           .griss:focus:focus{
-               background-color:  rgba(28, 28, 28, 0.895);
-               
-           }
-           .border2{
-               border-radius:100px;
-               color: rgb(255, 255, 255);
-           }
+        .griss:focus:focus {
+            background-color: rgba(28, 28, 28, 0.895);
+        }
 
-
-   </style>
+        .border2 {
+            border-radius: 100px;
+            color: rgb(255, 255, 255);
+        }
+    </style>
 </form>
 
 {% endblock %}

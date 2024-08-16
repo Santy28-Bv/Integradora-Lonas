@@ -65,28 +65,28 @@
         {% endfor %}
     </tbody>
 </table>
-
 <!-- Modal de confirmación -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmModalLabel">Confirmar Eliminación</h5>
+                <h5 class="modal-title" id="confirmModalLabel" style="color: #000;">Confirmar Eliminación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="color: #000;">
                 ¿Estás seguro de que deseas eliminar este registro? Si haces esto, la lona se devolverá y se eliminará el registro.
             </div>
             <div class="modal-footer">
                 <form id="deleteForm" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn border11">Eliminar</button>
+                    <button type="button" class="btn bordercan" data-bs-dismiss="modal">Cancelar</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Enlaces de paginación -->
 <nav aria-label="Page navigation">
@@ -140,6 +140,7 @@
     }
 </script>
 
+<!-- Estilos adicionales -->
 <style>
     body {
         background-image: url('/static/img/lonaa.png');
@@ -205,6 +206,27 @@
     .btn-close {
         background: transparent;
     }
+
+    /* Estilos para botones con degradado */
+    .border11 {
+        border-radius: 100px;
+        background: rgb(63, 94, 251);
+        background: linear-gradient(90deg, rgb(23, 57, 227) 0%, rgba(104, 59, 215, 1) 100%);
+    }
+
+    .bordercan {
+        background: linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
+        border-radius: 100px;
+    }
+
+    .border11:hover, .bordercan:hover {
+        opacity: .8;
+    }
+
+    .colorI {
+        color: rgb(250, 250, 250);
+    }
+
 </style>
 
 {% endblock %}

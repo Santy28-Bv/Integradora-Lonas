@@ -1,8 +1,10 @@
 {% extends 'layout_admin.html' %}
 
-{% block title %} Pedidos {% endblock %}
+{% block title %} {{ titulo }} {% endblock %}
 
 {% block body %}
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
 <h1 style="
     text-align: center; 
     color: rgb(255, 255, 255); 
@@ -11,7 +13,7 @@
     border-radius: 10px; 
     max-width: 600px; 
     margin: 20px auto;
-">PEDIDOS DE CARPAS</h1>
+">{{ titulo }}</h1>
 
 <table class="table table-dark table-hover">
     <thead>
@@ -26,27 +28,65 @@
             <th>Fecha Fin</th>
             <th>Estatus</th>
             <th>Metodo de Pago</th>
+            <th>Color</th>
+            <th>Medidas</th>
             <th>Total</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
         {% for fila in dato %}
         <tr>
-            <td>{{ fila[0] }}</td>
-            <td>{{ fila[1] }}</td>
-            <td>{{ fila[2] }}</td>
-            <td>{{ fila[3] }}</td>
-            <td>{{ fila[4] }}</td>
-            <td>{{ fila[5] }}</td>
-            <td>{{ fila[6] }}</td>
-            <td>{{ fila[7] }}</td>
-            <td>{{ fila[8] }}</td>
-            <td>{{ fila[9] }}</td>
-            <td>{{ fila[10] }}</td>
+            <td>{{ fila.id_alquila }}</td>
+            <td>{{ fila.Nombre }}</td>
+            <td>{{ fila['Apellido Paterno'] }}</td>
+            <td>{{ fila['Apellido Materno'] }}</td>
+            <td>{{ fila.Correo }}</td>
+            <td>{{ fila['Teléfono'] }}</td>
+            <td>{{ fila['Fecha Inicio'] }}</td>
+            <td>{{ fila['Fecha Fin'] }}</td>
+            <td>{{ fila.Estatus }}</td>
+            <td>{{ fila['Metodo de Pago'] }}</td>
+            <td>{{ fila.Color }}</td>
+            <td>{{ fila.Medidas }}</td>
+            <td>{{ fila.Total }}</td>
+            <td>
+                <!-- Formulario para cambiar el estatus -->
+                <form method="POST" action="{{ url_for('update_status', id=fila.id_alquila) }}" class="update-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <select name="estatus" class="form-control" onchange="handleStatusChange(this, event, '{{ url_for('confirm_delete', id=fila.id_alquila) }}')">
+                        <option value="En proceso" {% if fila.Estatus == 'En proceso' %}selected{% endif %}>En proceso</option>
+                        <option value="Entregada" {% if fila.Estatus == 'Entregada' %}selected{% endif %}>Entregada</option>
+                        <option value="Devuelta" {% if fila.Estatus == 'Devuelta' %}selected{% endif %}>Devuelta</option>
+                    </select>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar este registro? Una vez eliminado, no se podrá recuperar.
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn colorI border11 opacity">Eliminar</button>
+                    <button type="button" class="btn colorI bordercan opacity" data-bs-dismiss="modal">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Enlaces de paginación -->
 <nav aria-label="Page navigation">
@@ -112,12 +152,8 @@
 
     h1 {
         text-align: center;
-        color: rgb(255, 255, 255);
-        background: rgba(20, 20, 20, 0.9);
-        padding: 8px;
-        border-radius: 10px;
-        max-width: 600px;
-        margin: 20px auto;
+        margin-bottom: 20px;
+        color: #ffffff;
     }
 
     .table {
@@ -169,6 +205,26 @@
     .btn-close {
         background: transparent;
     }
+
+    /* Estilos para los botones del modal */
+    .border11 {
+        border-radius: 100px;
+        background: linear-gradient(90deg, rgb(23, 57, 227) 0%, rgba(104, 59, 215, 1) 100%);
+    }
+
+    .bordercan {
+        background: linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
+        border-radius: 100px;
+    }
+
+    .opacity:hover {
+        opacity: .8;
+    }
+
+    .colorI {
+        color: rgb(250, 250, 250);
+    }
+
 </style>
 
 {% endblock %}

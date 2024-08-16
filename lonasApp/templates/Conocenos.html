@@ -3,3 +3,48 @@
 {% block title %}
 Contactanos
 {% endblock %}
+
+{% block body %}
+    <div style="
+        background-image: url('/static/img/fondo-contacto.jpg'); /* Ruta a la imagen de fondo */
+        background-size: cover;
+        background-position: center;
+        color: white; /* Texto en blanco */
+        padding: 20px;
+        min-height: 100vh; /* Asegura que la página ocupe al menos el alto de la ventana */
+        display: flex;
+        justify-content: center; /* Centra horizontalmente */
+        align-items: center; /* Centra verticalmente */
+    ">
+        <div style="
+            background-color: rgba(0, 0, 0, 0.5); /* Negro con 50% de opacidad */
+            padding: 20px;
+            border-radius: 10px; /* Opcional: redondear las esquinas del fondo */
+            max-width: 600px; /* Limita el ancho máximo del contenido */
+            width: 100%;
+            text-align: center; /* Centra el texto */
+        ">
+            <h1 style="
+                margin-bottom: 20px; /* Espacio debajo del título */
+            ">Contacto</h1>
+            <p style="
+                margin-bottom: 10px; /* Espacio debajo de cada párrafo */
+            ">Avenida Xicotencatl #14</p>
+            <p style="
+                margin-bottom: 10px; /* Espacio debajo de cada párrafo */
+            ">Jose Antonio Filomeno Rojas</p>
+            <p style="
+                margin-bottom: 10px; /* Espacio debajo de cada párrafo */
+            ">Teléfonos:</p>
+            <ul style="
+                list-style-type: none; /* Quita los puntos de la lista */
+                padding: 0; /* Quita el padding de la lista */
+                margin: 0; /* Quita el margin de la lista */
+            ">
+                <li>2471181776</li>
+                <li>2471060026</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+

@@ -5,7 +5,7 @@
 {% block body %}
 <h1 style="
     text-align: center; 
-    color: rgb(206, 215, 32); 
+    color: rgb(255, 255, 255); 
     background: rgba(20, 20, 20, 0.9); 
     padding: 8px; 
     border-radius: 10px; 
@@ -59,7 +59,6 @@
     </select>
   </div>
 
-
   <!-- Selección de Medidas -->
   <div class="form-group">
     <label for="inputMedidas" style="color: rgb(160, 209, 44);">Selecciona las medidas:</label>
@@ -69,25 +68,55 @@
       border-radius: 100px;
     ">
       <option value="" selected>Selecciona las medidas</option>
-      <option value="10x10">10x10</option>
-      <option value="15x15">15x15</option>
-      <option value="20x20">20x20</option>
+      <option value="5x5">5x5</option>
+    <option value="5x10">5x10</option>
+    <option value="5x15">5x15</option>
+    <option value="5x25">5x25</option>
+    <option value="5x30">5x30</option>
+    <option value="5x35">5x35</option>
+    <option value="5x40">5x40</option>
+    <option value="5x45">5x45</option>
+    <option value="5x50">5x50</option>
+    <option value="5x55">5x55</option>
+    <option value="5x60">5x60</option>
+    <option value="10x10">10x10</option>
+    <option value="10x15">10x15</option>
+    <option value="10x20">10x20</option>
+    <option value="10x25">10x25</option>
+    <option value="10x30">10x30</option>
+    <option value="10x35">10x35</option>
+    <option value="10x40">10x40</option>
+    <option value="10x45">10x45</option>
+    <option value="10x50">10x50</option>
+    <option value="10x55">10x55</option>
+    <option value="10x60">10x60</option>
+    <option value="10x65">10x65</option>
+    <option value="10x70">10x70</option>
+    <option value="10x75">10x75</option>
+    <option value="10x80">10x80</option>
+    <option value="10x85">10x85</option>
+    <option value="10x90">10x90</option>
+    <option value="10x95">10x95</option>
+    <option value="10x100">10x100</option>
+
+
+
+
     </select>
   </div>
 
+  <!-- Campo de color habilitado -->
   <div class="form-group">
-    <label for="inputColor" style="color: rgb(160, 209, 44);">Color:</label>
+    <label for="inputColor" style="color: rgb(160, 209, 44);">Color de la carpa:</label>
     <select id="inputColor" class="form-control" name="color" required style="
       color: rgb(255, 255, 255);
-      background: rgb(28, 28, 28, 0.895); /* Fondo blanco para el <select> */
+      background: rgba(28, 28, 28, 0.895);
       border-radius: 100px;
-      opacity: 0.5; /* Para hacer el <select> parecer inhabilitado */
-    " disabled>
+    ">
       <option value="Blanca" selected>Blanco</option>
-      <!-- Puedes agregar más opciones si es necesario, pero estarán inhabilitadas -->
+      <!-- Puedes agregar más opciones si es necesario -->
     </select>
-</div>
-
+  </div>
 
   <!-- Botón de Envío -->
   <button type="submit" class="btn btn-primary" style="
