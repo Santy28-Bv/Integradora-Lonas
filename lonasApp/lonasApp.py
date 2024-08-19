@@ -321,7 +321,7 @@ def lonas_dashboard():
     if current_user.rol == 'admin':
         titulo = "Lonas"
         sql_count = 'SELECT COUNT(*) FROM lona;'
-        sql_lim = 'SELECT id_carpa, color, cantidad, precio_renta, medidas, imagen FROM lona ORDER BY id_carpa DESC LIMIT %s OFFSET %s;'
+        sql_lim = 'SELECT id_lona, color, cantidad, precio_renta, medidas, imagen FROM lona ORDER BY id_lona DESC LIMIT %s OFFSET %s;'
         paginado = paginador(sql_count, sql_lim, 1, 5)
         return render_template('lonas.html',
                                 titulo=titulo,
@@ -392,7 +392,7 @@ def lona_editar(id):
         titulo = "Editar Lona"
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('SELECT * FROM lona WHERE id_carpa=%s', (id,))
+        cur.execute('SELECT * FROM lona WHERE id_lona=%s', (id,))
         lona = cur.fetchone()
         cur.close()
         conn.close()
@@ -414,7 +414,7 @@ def lona_actualizar(id):
         medidas = request.form.get('medidas')
         conn = get_db_connection()
         cur = conn.cursor()
-        sql = "UPDATE lona SET color=%s, cantidad=%s, precio_renta=%s, medidas=%s WHERE id_carpa=%s"
+        sql = "UPDATE lona SET color=%s, cantidad=%s, precio_renta=%s, medidas=%s WHERE id_lona=%s"
         valores = (color, cantidad, precio_renta, medidas, id)
         cur.execute(sql, valores)
         conn.commit()
@@ -447,7 +447,7 @@ def lonas_actualizar_foto(id):
 
             conn = get_db_connection()
             cur = conn.cursor()
-            sql = "UPDATE lona SET imagen = %s WHERE id_carpa = %s"
+            sql = "UPDATE lona SET imagen = %s WHERE id_lona = %s"
             values = (filename, id)
             cur.execute(sql, values)
             conn.commit()
@@ -471,7 +471,7 @@ def lona_eliminar(id):
     if current_user.rol == 'admin':
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('DELETE FROM lona WHERE id_carpa = %s', (id,))
+        cur.execute('DELETE FROM lona WHERE id_lona = %s', (id,))
         conn.commit()
         cur.close()
         conn.close()
@@ -487,8 +487,8 @@ def lona_eliminar_foto(id):
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # Obtén el nombre de la imagen actual usando el id_carpa
-        cur.execute('SELECT imagen FROM lona WHERE id_carpa = %s', (id,))
+        # Obtén el nombre de la imagen actual usando el id_lona
+        cur.execute('SELECT imagen FROM lona WHERE id_lona = %s', (id,))
         foto = cur.fetchone()
 
         if foto and foto[0]:  # Verifica que existe una foto
@@ -499,7 +499,7 @@ def lona_eliminar_foto(id):
                 os.remove(foto_path)
 
             # Actualiza la base de datos para eliminar la foto
-            cur.execute('UPDATE lona SET imagen = NULL WHERE id_carpa = %s', (id,))
+            cur.execute('UPDATE lona SET imagen = NULL WHERE id_lona = %s', (id,))
             conn.commit()
 
         cur.close()
@@ -867,7 +867,7 @@ def rentar_lonas():
             cur = conn.cursor()
 
             # Verificar disponibilidad de la lona
-            cur.execute("SELECT cantidad, id_carpa, precio_renta FROM lona WHERE medidas = %s AND color = %s", (medidas, color))
+            cur.execute("SELECT cantidad, id_lona, precio_renta FROM lona WHERE medidas = %s AND color = %s", (medidas, color))
             result = cur.fetchone()
             print("Resultado de la consulta de disponibilidad de lona:", result)
 
@@ -875,8 +875,8 @@ def rentar_lonas():
                 flash('La lona solicitada no está disponible.', 'error')
                 return redirect(url_for('rentar_lonas'))
 
-            cantidad, id_carpa, precio_renta = result
-            print(f"Cantidad disponible: {cantidad}, ID Lona: {id_carpa}, Precio Renta: {precio_renta}")
+            cantidad, id_lona, precio_renta = result
+            print(f"Cantidad disponible: {cantidad}, ID Lona: {id_lona}, Precio Renta: {precio_renta}")
 
             # Recuperar el id_cliente y el municipio basado en el correo del cliente
             cur.execute("""
@@ -917,14 +917,14 @@ def rentar_lonas():
                 INSERT INTO alquila (fk_cliente, fk_lona, fecha_inicio, fecha_fin, estatus, metodo_de_pago, total)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 RETURNING id_alquila;
-            """, (id_cliente, id_carpa, fecha_inicio, fecha_fin, 'En proceso', metodo_pago, total))
+            """, (id_cliente, id_lona, fecha_inicio, fecha_fin, 'En proceso', metodo_pago, total))
 
             id_alquila = cur.fetchone()[0]
             print(f"ID de la nueva solicitud de alquiler: {id_alquila}")
 
             # Actualizar la cantidad de lonas disponibles
-            cur.execute("UPDATE lona SET cantidad = cantidad - 1 WHERE id_carpa = %s", (id_carpa,))
-            print(f"Cantidad de lona actualizada para ID Lona: {id_carpa}")
+            cur.execute("UPDATE lona SET cantidad = cantidad - 1 WHERE id_lona = %s", (id_lona,))
+            print(f"Cantidad de lona actualizada para ID Lona: {id_lona}")
 
             conn.commit()
             flash('Solicitud realizada con éxito.', 'success')
@@ -1073,11 +1073,11 @@ def confirm_delete(id):
                 flash('No se encontró el alquiler.', 'error')
                 return redirect(url_for('pedidos_lonas'))
 
-            id_carpa = alquiler[0]
+            id_lona = alquiler[0]
 
             # Actualizar la cantidad de lonas disponibles
-            cur.execute("UPDATE lona SET cantidad = cantidad + 1 WHERE id_carpa = %s", (id_carpa,))
-            print(f"Cantidad de lona actualizada para ID Lona: {id_carpa}")
+            cur.execute("UPDATE lona SET cantidad = cantidad + 1 WHERE id_lona = %s", (id_lona,))
+            print(f"Cantidad de lona actualizada para ID Lona: {id_lona}")
 
             # Eliminar el registro de alquiler
             cur.execute("DELETE FROM alquila WHERE id_alquila = %s", (id,))
