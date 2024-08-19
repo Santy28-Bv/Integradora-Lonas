@@ -85,7 +85,6 @@
                     <div class="dropdown-menu dropdown-menu-right c7" aria-labelledby="userDropdown">
                         <a class="dropdown-item c4" href="{{ url_for('logout') }}">Cerrar sesión</a>
                           {% if current_user.rol == 'cliente' %}
-                          <a class="dropdown-item c4" href="{{ url_for('sideClienteInicio') }}">Mi info</a>
                          {% endif %}
                     </div>
                 </li>

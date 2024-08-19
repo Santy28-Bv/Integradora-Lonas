@@ -15,6 +15,21 @@
     margin: 20px auto;
 ">PEDIDOS DE LONAS</h1>
 
+
+<!-- Mensajes Flash -->
+<div id="flashMessages" class="flash-messages" data-role="{{ current_user.rol }}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} flash-alert" role="alert">
+                    {{ message | safe }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+
 <div class="container">
     <div class="table-wrapper">
         <div class="table-responsive">
@@ -256,6 +271,52 @@
     .text-center {
         text-align: center;
     }
+
+    
+    .flash-messages {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1050;
+            max-width: 300px;
+            overflow: hidden;
+        }
+
+        .flash-alert {
+            margin-bottom: 10px;
+            border-radius: 5px;
+            padding: 10px;
+            color: rgb(252, 252, 252);
+            background: rgba(0, 0, 0, 0.808);
+            text-align: center;
+            border-radius: 100px;
+        }
+
+        /* Estilos para ocultar los mensajes flash */
+        .hidden {
+            display: none;
+        }
 </style>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Selecciona el contenedor de mensajes flash y obtiene el rol del usuario
+        const flashMessagesContainer = document.querySelector('#flashMessages');
+        const userRole = flashMessagesContainer.getAttribute('data-role');
+
+        // Establece el tiempo de espera según el rol
+        const delay = userRole === 'admin' ? 3000 : 7000; // 3 segundos para admin, 7 segundos para clientes
+
+        // Selecciona todos los mensajes flash y ocúltalos después del tiempo de espera
+        const flashAlerts = flashMessagesContainer.querySelectorAll('.flash-alert');
+        flashAlerts.forEach(alert => {
+            setTimeout(() => {
+                alert.classList.add('hidden');
+            }, delay);
+        });
+    });
+</script>
 
 {% endblock %}

@@ -53,8 +53,8 @@ def get_db_connection():
     try:
         conn = psycopg2.connect(host='localhost',
                                 dbname='lonas',
-                                user=os.environ['DB_USER'],
-                                password=os.environ['DB_PASSWORD'])
+                                user=os.environ['postgres'],
+                                password=os.environ['12345'])
         return conn
     except psycopg2.Error as error:
         print(f"Error al conectar a la base de datos: {error}")
@@ -1367,17 +1367,6 @@ def confirm_delete_carpa(id):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 #-------------------------------------------------
 
 @app.route('/Contactanos')
@@ -1401,7 +1390,7 @@ if __name__ == '__main__':
     csrf.init_app(app)
     app.register_error_handler(404,pagina_no_encontrada)
     app.register_error_handler(401,acceso_no_autorizado)
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5000)
     
     #activar entorno         vistual.venv\Scripts\activate
     #correr aplicacion       python app\app.py run      
