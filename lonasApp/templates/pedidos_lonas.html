@@ -15,56 +15,63 @@
     margin: 20px auto;
 ">PEDIDOS DE LONAS</h1>
 
-<table class="table table-dark table-hover">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido Paterno</th>
-            <th>Apellido Materno</th>
-            <th>Correo</th>
-            <th>Teléfono</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Fin</th>
-            <th>Estatus</th>
-            <th>Metodo de Pago</th>
-            <th>Color</th>
-            <th>Medidas</th>
-            <th>Total</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for fila in dato %}
-        <tr>
-            <td>{{ fila.id_alquila }}</td>
-            <td>{{ fila.Nombre }}</td>
-            <td>{{ fila['Apellido Paterno'] }}</td>
-            <td>{{ fila['Apellido Materno'] }}</td>
-            <td>{{ fila.Correo }}</td>
-            <td>{{ fila['Teléfono'] }}</td>
-            <td>{{ fila['Fecha Inicio'] }}</td>
-            <td>{{ fila['Fecha Fin'] }}</td>
-            <td>{{ fila.Estatus }}</td>
-            <td>{{ fila['Metodo de Pago'] }}</td>
-            <td>{{ fila.Color }}</td>
-            <td>{{ fila.Medidas }}</td>
-            <td>{{ fila.Total }}</td>
-            <td>
-                <!-- Formulario para cambiar el estatus -->
-                <form method="POST" action="{{ url_for('update_status', id=fila.id_alquila) }}" class="update-form">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <select name="estatus" class="form-control" onchange="handleStatusChange(this, event, '{{ url_for('confirm_delete', id=fila.id_alquila) }}')">
-                        <option value="En proceso" {% if fila.Estatus == 'En proceso' %}selected{% endif %}>En proceso</option>
-                        <option value="Entregada" {% if fila.Estatus == 'Entregada' %}selected{% endif %}>Entregada</option>
-                        <option value="Devuelta" {% if fila.Estatus == 'Devuelta' %}selected{% endif %}>Devuelta</option>
-                    </select>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container">
+    <div class="table-wrapper">
+        <div class="table-responsive">
+            <table class="table table-striped table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center blanco">ID</th>
+                        <th class="text-center blanco">Nombre</th>
+                        <th class="text-center blanco">Apellido Paterno</th>
+                        <th class="text-center blanco">Apellido Materno</th>
+                        <th class="text-center blanco">Correo</th>
+                        <th class="text-center blanco">Teléfono</th>
+                        <th class="text-center blanco">Fecha Inicio</th>
+                        <th class="text-center blanco">Fecha Fin</th>
+                        <th class="text-center blanco">Estatus</th>
+                        <th class="text-center blanco">Metodo de Pago</th>
+                        <th class="text-center blanco">Color</th>
+                        <th class="text-center blanco">Medidas</th>
+                        <th class="text-center blanco">Total</th>
+                        <th class="text-center blanco">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in dato %}
+                    <tr>
+                        <td class="text-center blanco">{{ fila.id_alquila }}</td>
+                        <td class="text-center blanco">{{ fila.Nombre }}</td>
+                        <td class="text-center blanco">{{ fila['Apellido Paterno'] }}</td>
+                        <td class="text-center blanco">{{ fila['Apellido Materno'] }}</td>
+                        <td class="text-center blanco">{{ fila.Correo }}</td>
+                        <td class="text-center blanco">{{ fila['Teléfono'] }}</td>
+                        <td class="text-center blanco">{{ fila['Fecha Inicio'] }}</td>
+                        <td class="text-center blanco">{{ fila['Fecha Fin'] }}</td>
+                        <td class="text-center blanco">{{ fila.Estatus }}</td>
+                        <td class="text-center blanco">{{ fila['Metodo de Pago'] }}</td>
+                        <td class="text-center blanco">{{ fila.Color }}</td>
+                        <td class="text-center blanco">{{ fila.Medidas }}</td>
+                        <td class="text-center blanco">{{ fila.Total }}</td>
+                        <td class="text-center">
+                            <!-- Formulario para cambiar el estatus -->
+                            <form method="POST" action="{{ url_for('update_status', id=fila.id_alquila) }}" class="update-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <select name="estatus" class="form-control" onchange="handleStatusChange(this, event, '{{ url_for('confirm_delete', id=fila.id_alquila) }}')">
+                                    <option value="En proceso" {% if fila.Estatus == 'En proceso' %}selected{% endif %}>En proceso</option>
+                                    <option value="Entregada" {% if fila.Estatus == 'Entregada' %}selected{% endif %}>Entregada</option>
+                                    <option value="Devuelta" {% if fila.Estatus == 'Devuelta' %}selected{% endif %}>Devuelta</option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <!-- Modal de confirmación -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -74,19 +81,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="color: #000;">
-                ¿Estás seguro de que deseas eliminar este registro? Si haces esto, la lona se devolverá y se eliminará el registro.
+                ¿Estás seguro que este cliente ya devolvio la lona? Esto eliminar este registro y no se puede deshacer.
             </div>
             <div class="modal-footer">
                 <form id="deleteForm" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="btn border11">Eliminar</button>
-                    <button type="button" class="btn bordercan" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn border11 blanco">Eliminar</button>
+                    <button type="button" class="btn bordercan blanco" data-bs-dismiss="modal">Cancelar</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Enlaces de paginación -->
 <nav aria-label="Page navigation">
@@ -157,11 +163,26 @@
         color: #ffffff;
     }
 
-    .table {
+    .container {
         margin: 20px auto;
-        width: 90%;
+        max-width: 1200px;
+    }
+
+    .table-wrapper {
+        display: flex;
+        justify-content: center;
+        overflow-x: auto; /* Permitir desplazamiento horizontal si es necesario */
+    }
+
+    .table {
+        width: 100%;
+        max-width: 100%;
         border-radius: 8px;
         overflow: hidden;
+    }
+
+    .table-striped {
+        background: linear-gradient(90deg, rgba(30, 30, 36, 0.906) 0%, rgba(54, 53, 55, 0.911) 100%);
     }
 
     .table-dark {
@@ -227,6 +248,14 @@
         color: rgb(250, 250, 250);
     }
 
+    .blanco {
+        color: #ffffff;
+    }
+
+    /* Alineación centrada del texto en celdas */
+    .text-center {
+        text-align: center;
+    }
 </style>
 
 {% endblock %}

@@ -62,7 +62,6 @@ def get_db_connection():
 
 
 #---------------INICIO------------#
-
 @app.route("/")
 def index():
     conn = get_db_connection()
@@ -71,7 +70,22 @@ def index():
     datos = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('index.html')
+
+ # Verifica si hay un usuario autenticado
+    if current_user.is_authenticated:
+        # Mostrar el mensaje flash solo si no ha sido mostrado antes en esta sesión
+        if not session.get('flash_message_shown', False):
+            flash(f'Bienvenido, {current_user.username}!', 'success')
+            session['flash_message_shown'] = True  # Marca que el mensaje ha sido mostrado
+
+    return render_template('index.html', datos=datos)
+
+
+
+
+
+
+
 
 #--------------------- Paginador ----------------------#
 def paginador(sql_count, sql_lim, in_page, per_pages):
@@ -115,14 +129,14 @@ def formulario_usuario():
             cur = conn.cursor()
             try:
                 # Verificar si el correo ya existe
-                cur.execute('SELECT 1 FROM usuario WHERE "correo" = %s', (correo,))
+                cur.execute('SELECT 1 FROM usuario WHERE correo = %s', (correo,))
                 if cur.fetchone():
                     flash("El correo ya existe.", 'error')
                     return redirect(url_for('formulario_usuario'))
                 
                 # Insertar en la tabla usuario y obtener el id del usuario creado
                 cur.execute(
-                    'INSERT INTO usuario ("correo", "password") VALUES (%s, %s) RETURNING id_user',
+                    'INSERT INTO usuario (correo, password) VALUES (%s, %s) RETURNING id_user',
                     (correo, password)
                 )
                 id_user = cur.fetchone()[0]
@@ -307,7 +321,7 @@ def lonas_dashboard():
     if current_user.rol == 'admin':
         titulo = "Lonas"
         sql_count = 'SELECT COUNT(*) FROM lona;'
-        sql_lim = 'SELECT id_lona, color, cantidad, precio_renta, medidas, imagen FROM lona ORDER BY id_lona DESC LIMIT %s OFFSET %s;'
+        sql_lim = 'SELECT id_carpa, color, cantidad, precio_renta, medidas, imagen FROM lona ORDER BY id_carpa DESC LIMIT %s OFFSET %s;'
         paginado = paginador(sql_count, sql_lim, 1, 5)
         return render_template('lonas.html',
                                 titulo=titulo,
@@ -378,7 +392,7 @@ def lona_editar(id):
         titulo = "Editar Lona"
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('SELECT * FROM lona WHERE id_lona=%s', (id,))
+        cur.execute('SELECT * FROM lona WHERE id_carpa=%s', (id,))
         lona = cur.fetchone()
         cur.close()
         conn.close()
@@ -400,7 +414,7 @@ def lona_actualizar(id):
         medidas = request.form.get('medidas')
         conn = get_db_connection()
         cur = conn.cursor()
-        sql = "UPDATE lona SET color=%s, cantidad=%s, precio_renta=%s, medidas=%s WHERE id_lona=%s"
+        sql = "UPDATE lona SET color=%s, cantidad=%s, precio_renta=%s, medidas=%s WHERE id_carpa=%s"
         valores = (color, cantidad, precio_renta, medidas, id)
         cur.execute(sql, valores)
         conn.commit()
@@ -433,7 +447,7 @@ def lonas_actualizar_foto(id):
 
             conn = get_db_connection()
             cur = conn.cursor()
-            sql = "UPDATE lona SET imagen = %s WHERE id_lona = %s"
+            sql = "UPDATE lona SET imagen = %s WHERE id_carpa = %s"
             values = (filename, id)
             cur.execute(sql, values)
             conn.commit()
@@ -457,7 +471,7 @@ def lona_eliminar(id):
     if current_user.rol == 'admin':
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('DELETE FROM lona WHERE id_lona = %s', (id,))
+        cur.execute('DELETE FROM lona WHERE id_carpa = %s', (id,))
         conn.commit()
         cur.close()
         conn.close()
@@ -473,8 +487,8 @@ def lona_eliminar_foto(id):
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # Obtén el nombre de la imagen actual usando el id_lona
-        cur.execute('SELECT imagen FROM lona WHERE id_lona = %s', (id,))
+        # Obtén el nombre de la imagen actual usando el id_carpa
+        cur.execute('SELECT imagen FROM lona WHERE id_carpa = %s', (id,))
         foto = cur.fetchone()
 
         if foto and foto[0]:  # Verifica que existe una foto
@@ -485,7 +499,7 @@ def lona_eliminar_foto(id):
                 os.remove(foto_path)
 
             # Actualiza la base de datos para eliminar la foto
-            cur.execute('UPDATE lona SET imagen = NULL WHERE id_lona = %s', (id,))
+            cur.execute('UPDATE lona SET imagen = NULL WHERE id_carpa = %s', (id,))
             conn.commit()
 
         cur.close()
@@ -497,35 +511,39 @@ def lona_eliminar_foto(id):
         return redirect(url_for('index'))
 
 
+#---------------CRUD CARPAS---------------#
 
-
-#CARPAS
 @app.route("/dashboard/carpas")
 @login_required
 def carpas_dashboard():
     if current_user.rol == 'admin':
         titulo = "Carpas"
         sql_count = 'SELECT COUNT(*) FROM carpa;'
-        sql_lim = 'SELECT id_carpa, color, cantidad, precio_renta, medidas, imagen FROM carpa ORDER BY id_carpa DESC LIMIT %s OFFSET %s;'
+        sql_lim = 'SELECT id_carpa, color, cantidad, precio_renta, medidas FROM carpa ORDER BY id_carpa DESC LIMIT %s OFFSET %s;'
         paginado = paginador(sql_count, sql_lim, 1, 5)
+        
         return render_template('carpas.html',
-                                titulo=titulo,
-                                carpas=paginado[0],
-                                page=paginado[1],
-                                per_page=paginado[2],
-                                total_items=paginado[3],
-                                total_pages=paginado[4])
+                               titulo=titulo,
+                               carpas=paginado[0],
+                               page=paginado[1],
+                               per_page=paginado[2],
+                               total_items=paginado[3],
+                               total_pages=paginado[4])
     else:
         return redirect(url_for('index'))
-
+    
+    
+    
 @app.route("/dashboard/carpas/formulario", methods=['GET', 'POST'])
 @login_required
 def carpas_formulario():
     if current_user.rol == 'admin':
         titulo = "Formulario de Carpas"
+        print("DEBUG: Entrando a la función carpas_formulario")  # Mensaje de depuración
         return render_template('carpas_formulario.html', titulo=titulo)
     else:
         return redirect(url_for('index'))
+
 
 @app.route("/dashboard/carpas/crear", methods=['GET', 'POST'])
 @login_required
@@ -538,10 +556,13 @@ def carpas_crear():
             medidas = request.form['medidas']
             imagen = request.files.get('Foto')
 
+            conn = get_db_connection()
+            cur = conn.cursor()
+
             try:
                 if imagen and allowed_file(imagen.filename):
                     cadena_aleatoria = my_random_string(10)
-                    filename = secure_filename(f"carpa_{cadena_aleatoria}_{imagen.filename}") 
+                    filename = secure_filename(f"carpa_{cadena_aleatoria}_{imagen.filename}")
                     file_path = os.path.join(app.config['UPLOAD_FOLDER_CARPAS'], filename)
 
                     if os.path.exists(file_path):
@@ -549,84 +570,227 @@ def carpas_crear():
                         return redirect(url_for('carpas_formulario'))
 
                     imagen.save(file_path)
-                    conn = get_db_connection()
-                    cur = conn.cursor()
                     cur.execute('INSERT INTO carpa (color, cantidad, precio_renta, medidas, imagen) VALUES (%s, %s, %s, %s, %s)',
                                 (color, cantidad, precio_renta, medidas, filename))
-                    conn.commit()
                 else:
-                    conn = get_db_connection()
-                    cur = conn.cursor()
                     cur.execute('INSERT INTO carpa (color, cantidad, precio_renta, medidas) VALUES (%s, %s, %s, %s)',
                                 (color, cantidad, precio_renta, medidas))
-                    conn.commit()
+
+                conn.commit()
+                flash('¡Carpa agregada exitosamente!', 'success')
+                return redirect(url_for('carpas_dashboard'))
+
             except Exception as e:
-                flash(f"Error al crear la carpa: {e}", 'error')
+                print(f"Error al crear la carpa: {e}")
+                flash('Error al agregar la carpa. Inténtelo de nuevo.', 'danger')
+                return redirect(url_for('carpas_formulario'))
+
             finally:
                 cur.close()
                 conn.close()
 
-            flash('¡Carpa agregada exitosamente!', 'success')
-            return redirect(url_for('carpas_dashboard'))
         return redirect(url_for('carpas_formulario'))
     else:
         return redirect(url_for('index'))
     
-    
-@app.route('/dashboard/carpas/editar/<string:id>', methods=['GET', 'POST'])
+
+
+
+@app.route('/dashboard/carpas/editar/<int:id>')
 @login_required
 def carpas_editar(id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM carpa WHERE id_carpa = %s', (id,))
-    carpa = cur.fetchone()
-
-    if carpa is None:
-        flash('Carpa no encontrada', 'error')
-        return redirect(url_for('carpas_dashboard'))
-
-    if request.method == 'POST':
-        # Aquí iría la lógica para actualizar la carpa
-        color = request.form['Color']
-        cantidad = request.form['Cantidad']
-        medidas = request.form['Medidas']
-
+    if current_user.rol == 'admin':
+        titulo = "Editar Carpa"
+        conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('''
-            UPDATE carpa
-            SET color = %s, cantidad = %s, medidas = %s
-            WHERE id_carpa = %s
-        ''', (color, cantidad, medidas, id))
-        conn.commit()
+        cur.execute('SELECT id_carpa, color, cantidad, precio_renta, medidas, imagen FROM carpa WHERE id_carpa = %s', (id,))
+        carpa = cur.fetchone()
         cur.close()
         conn.close()
+        if carpa:
+            return render_template('carpas_editar.html', titulo=titulo, carpa=carpa)
+        else:
+            flash('Carpa no encontrada', 'danger')
+            return redirect(url_for('carpas_dashboard'))
+    else:
+        return redirect(url_for('index'))
 
-        flash('Carpa actualizada exitosamente', 'success')
-        return redirect(url_for('carpas_dashboard'))
-
-    cur.close()
-    conn.close()
-
-    return render_template('carpas_editar.html', titulo='Editar Carpa', carpa=carpa)
 
 
-@app.route("/dashboard/carpas/eliminar/<string:id>", methods=['POST'])
+
+
+@app.route('/dashboard/carpas/actualizar/<int:id>', methods=['POST'])
+@login_required
+def actualizar_carpa(id):
+    if current_user.rol == 'admin':
+        color = request.form['color']
+        cantidad = request.form.get('cantidad', type=int)
+        precio_renta = request.form.get('precio_renta', type=float)
+        medidas = request.form.get('medidas')
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        try:
+            sql = "UPDATE carpa SET color=%s, cantidad=%s, precio_renta=%s, medidas=%s WHERE id_carpa=%s"
+            valores = (color, cantidad, precio_renta, medidas, id)
+            cur.execute(sql, valores)
+            conn.commit()
+            flash('¡Carpa modificada exitosamente!', 'success')
+            return redirect(url_for('carpas_dashboard'))
+
+        except Exception as e:
+            print(f"Error al actualizar la carpa: {e}")
+            flash('Error al actualizar la carpa. Inténtelo de nuevo.', 'danger')
+            return redirect(url_for('carpas_editar', id=id))
+
+        finally:
+            cur.close()
+            conn.close()
+
+    else:
+        return redirect(url_for('index'))
+
+        
+@app.route('/dashboard/carpas/actualizar/foto/<int:id>', methods=['POST'])
+@login_required
+def actualizar_foto_carpa(id):
+    if current_user.rol == 'admin':
+        imagen = request.files.get('Foto')
+        foto_anterior = request.form.get('anterior')
+        foto_anterior_path = os.path.join(app.config['UPLOAD_FOLDER_CARPAS'], foto_anterior) if foto_anterior else None
+
+        if imagen and allowed_file(imagen.filename):
+            cadena_aleatoria = my_random_string(10)
+            filename = secure_filename(f"{cadena_aleatoria}_{imagen.filename}")
+            file_path = os.path.join(app.config['UPLOAD_FOLDER_CARPAS'], filename)
+
+            if os.path.exists(file_path):
+                flash('Error: ¡Un archivo con el mismo nombre ya existe! Intente renombrar su archivo.')
+                return redirect(url_for('carpas_editar', id=id))
+
+            imagen.save(file_path)
+
+            conn = get_db_connection()
+            cur = conn.cursor()
+
+            try:
+                sql = "UPDATE carpa SET imagen = %s WHERE id_carpa = %s"
+                values = (filename, id)
+                cur.execute(sql, values)
+                conn.commit()
+
+                if foto_anterior_path and os.path.exists(foto_anterior_path):
+                    os.remove(foto_anterior_path)
+
+                flash('¡Foto de carpa actualizada exitosamente!', 'success')
+                return redirect(url_for('carpas_editar', id=id))
+
+            except Exception as e:
+                print(f"Error al actualizar la foto de la carpa: {e}")
+                flash('Error al actualizar la foto. Inténtelo de nuevo.', 'danger')
+                return redirect(url_for('carpas_editar', id=id))
+
+            finally:
+                cur.close()
+                conn.close()
+
+        else:
+            flash('Error: ¡Extensión de archivo inválida! Intente con una imagen válida PNG, JPG o JPEG.')
+            return redirect(url_for('carpas_editar', id=id))
+
+    else:
+        return redirect(url_for('index'))
+
+    
+@app.route('/dashboard/carpas/eliminar_foto/<int:id>', methods=['POST'])
+@login_required
+def eliminar_foto_carpa(id):
+    if current_user.rol == 'admin':
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        try:
+            # Obtén el nombre de la imagen actual usando el id de la carpa
+            cur.execute('SELECT imagen FROM carpa WHERE id_carpa = %s', (id,))
+            foto = cur.fetchone()
+
+            if foto and foto[0]:  # Verifica que existe una imagen
+                foto_path = os.path.join(app.config['UPLOAD_FOLDER_CARPAS'], foto[0])
+
+                # Elimina la imagen del sistema de archivos
+                if os.path.exists(foto_path):
+                    os.remove(foto_path)
+
+                # Actualiza la base de datos para eliminar la imagen
+                cur.execute('UPDATE carpa SET imagen = NULL WHERE id_carpa = %s', (id,))
+                conn.commit()
+
+                flash('¡Foto de carpa eliminada exitosamente!', 'success')
+            else:
+                flash('No se encontró una imagen para eliminar.', 'warning')
+
+        except Exception as e:
+            print(f"Error al eliminar la foto de la carpa: {e}")
+            flash('Error al eliminar la foto. Inténtelo de nuevo.', 'danger')
+
+        finally:
+            cur.close()
+            conn.close()
+
+        return redirect(url_for('carpas_editar', id=id))
+
+    else:
+        return redirect(url_for('index'))
+
+@app.route('/dashboard/carpas/eliminar/<int:id>', methods=['POST'])
 @login_required
 def carpas_eliminar(id):
     if current_user.rol == 'admin':
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('DELETE FROM carpa WHERE id_carpa = %s', (id,))
-        conn.commit()
-        cur.close()
-        conn.close()
-        flash('¡Carpa eliminada exitosamente!', 'success')
+
+        try:
+            # Obtén el nombre de la imagen actual usando el id de la carpa
+            cur.execute('SELECT imagen FROM carpa WHERE id_carpa = %s', (id,))
+            foto = cur.fetchone()
+
+            if foto and foto[0]:  # Verifica que existe una imagen
+                foto_path = os.path.join(app.config['UPLOAD_FOLDER_CARPAS'], foto[0])
+
+                # Elimina la imagen del sistema de archivos si existe
+                if os.path.exists(foto_path):
+                    os.remove(foto_path)
+
+            # Elimina la carpa de la base de datos
+            cur.execute('DELETE FROM carpa WHERE id_carpa = %s', (id,))
+            conn.commit()
+
+            flash('¡Carpa eliminada exitosamente!', 'success')
+
+        except Exception as e:
+            print(f"Error al eliminar la carpa: {e}")
+            flash('Error al eliminar la carpa. Inténtelo de nuevo.', 'danger')
+
+        finally:
+            cur.close()
+            conn.close()
+
         return redirect(url_for('carpas_dashboard'))
+
     else:
         return redirect(url_for('index'))
 
 
+
 #-------------APARTADO LOGIN---------------------------#
+
+
+
+
+
+
+
 
 @app.route('/login')
 def login():
@@ -650,10 +814,12 @@ def loguear():
         loged_user = ModuleUser.login(get_db_connection(), correo, password)
         
         print(f"Loged_user: {loged_user}")
+        if loged_user:
+            login_user(loged_user)
+            session['flash_message_shown'] = False  # Restablece el estado del mensaje flash
 
         if loged_user:
             login_user(loged_user)
-            flash(f'Bienvenido, {loged_user.username}!')
             return redirect(url_for('index'))  
         else:
             flash('Correo y/o contraseña incorrectos.')
@@ -665,6 +831,7 @@ def loguear():
 @login_required
 def logout():
     logout_user()
+    session.pop('flash_message_shown', None) 
     return redirect(url_for('index'))
 
 
@@ -672,10 +839,15 @@ def logout():
 
 
 
-#------------------RENTAR O SOLICITAR--------------#
+#------------------RENTAR/SOLICITAR LONA Y PEDIDO DE LONA--------------#
 @app.route('/rentar_lonas', methods=['GET', 'POST'])
 @login_required
 def rentar_lonas():
+    conn = None
+    cur = None
+    medidas = []
+    colores = []
+
     if request.method == 'POST':
         try:
             # Captura de datos del formulario
@@ -695,7 +867,7 @@ def rentar_lonas():
             cur = conn.cursor()
 
             # Verificar disponibilidad de la lona
-            cur.execute("SELECT cantidad, id_lona, precio_renta FROM lona WHERE medidas = %s AND color = %s", (medidas, color))
+            cur.execute("SELECT cantidad, id_carpa, precio_renta FROM lona WHERE medidas = %s AND color = %s", (medidas, color))
             result = cur.fetchone()
             print("Resultado de la consulta de disponibilidad de lona:", result)
 
@@ -703,42 +875,56 @@ def rentar_lonas():
                 flash('La lona solicitada no está disponible.', 'error')
                 return redirect(url_for('rentar_lonas'))
 
-            cantidad, id_lona, precio_renta = result
-            print(f"Cantidad disponible: {cantidad}, ID Lona: {id_lona}, Precio Renta: {precio_renta}")
+            cantidad, id_carpa, precio_renta = result
+            print(f"Cantidad disponible: {cantidad}, ID Lona: {id_carpa}, Precio Renta: {precio_renta}")
 
-            # Recuperar el id_cliente basado en el correo del cliente
-            cur.execute("SELECT id_cliente FROM cliente JOIN usuario ON cliente.fk_usuario = usuario.id_user WHERE usuario.correo = %s", (correo_cliente,))
-            id_cliente = cur.fetchone()
-            print("Resultado de la consulta del ID del cliente:", id_cliente)
+            # Recuperar el id_cliente y el municipio basado en el correo del cliente
+            cur.execute("""
+                SELECT cliente.id_cliente, cliente.municipio
+                FROM cliente
+                JOIN usuario ON cliente.fk_usuario = usuario.id_user
+                WHERE usuario.correo = %s
+            """, (correo_cliente,))
+            cliente_data = cur.fetchone()
+            print("Resultado de la consulta del cliente:", cliente_data)
 
-            if id_cliente is None:
+            if cliente_data is None:
                 flash('No se encontró el cliente asociado a este correo.', 'error')
                 return redirect(url_for('rentar_lonas'))
 
-            id_cliente = id_cliente[0]
-            print(f"ID Cliente: {id_cliente}")
+            id_cliente, municipio = cliente_data
+            print(f"ID Cliente: {id_cliente}, Municipio: {municipio}")
 
             # Calcular el costo total
             dias_alquiler = (fecha_fin - fecha_inicio).days
             recargo = 0
-            if fecha_fin.date() > datetime.now().date():  # Convertir fecha_fin a date
-                recargo = (fecha_fin.date() - datetime.now().date()).days * 300
+
+            # Verificar si hay recargo por retraso en la devolución
+            fecha_actual = datetime.now().date()
+            if fecha_actual > fecha_fin.date():  # Convertir fecha_fin a date
+                recargo += (fecha_actual - fecha_fin.date()).days * 300
+
+            # Verificar recargo por municipio
+            municipio = municipio.strip().lower()  # Eliminar espacios y convertir a minúsculas
+            if municipio != 'huamantla':
+                recargo += 300
 
             total = precio_renta + recargo
+            print(f"Recargo total: {recargo}, Total final: {total}")
 
             # Insertar los datos en la tabla alquila (sin color y medidas)
             cur.execute("""
                 INSERT INTO alquila (fk_cliente, fk_lona, fecha_inicio, fecha_fin, estatus, metodo_de_pago, total)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 RETURNING id_alquila;
-            """, (id_cliente, id_lona, fecha_inicio, fecha_fin, 'En proceso', metodo_pago, total))
+            """, (id_cliente, id_carpa, fecha_inicio, fecha_fin, 'En proceso', metodo_pago, total))
 
-            id_alquila = cur.fetchone()
+            id_alquila = cur.fetchone()[0]
             print(f"ID de la nueva solicitud de alquiler: {id_alquila}")
 
             # Actualizar la cantidad de lonas disponibles
-            cur.execute("UPDATE lona SET cantidad = cantidad - 1 WHERE id_lona = %s", (id_lona,))
-            print(f"Cantidad de lona actualizada para ID Lona: {id_lona}")
+            cur.execute("UPDATE lona SET cantidad = cantidad - 1 WHERE id_carpa = %s", (id_carpa,))
+            print(f"Cantidad de lona actualizada para ID Lona: {id_carpa}")
 
             conn.commit()
             flash('Solicitud realizada con éxito.', 'success')
@@ -749,12 +935,41 @@ def rentar_lonas():
             flash(f'Error al realizar la solicitud: {e}', 'error')
 
         finally:
-            cur.close()
-            conn.close()
-       
-            return render_template('index.html')
+            if cur is not None:
+                cur.close()
+            if conn is not None:
+                conn.close()
 
-    return render_template('rentar_lonas.html')
+            return redirect(url_for('rentar_lonas'))
+    
+    # Método GET: Recuperar colores y medidas disponibles
+    try:
+        # Establecer conexión a la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Obtener medidas disponibles
+        cur.execute("SELECT DISTINCT medidas FROM lona")
+        medidas = [row[0] for row in cur.fetchall()]
+        medidas.sort(key=lambda m: list(map(int, m.split('x'))))  # Ordenar por dimensiones
+
+        # Obtener colores disponibles
+        cur.execute("SELECT DISTINCT color FROM lona")
+        colores = [row[0] for row in cur.fetchall()]
+        colores.sort()  # Ordenar alfabéticamente
+
+    except Exception as e:
+        print(f"Error durante la recuperación de datos: {e}")
+
+    finally:
+        if cur is not None:
+            cur.close()
+        if conn is not None:
+            conn.close()
+
+    return render_template('rentar_lonas.html', medidas=medidas, colores=colores)
+
+
 
 @app.route('/dashboard/pedidos/lonas')
 @login_required
@@ -784,6 +999,7 @@ def pedidos_lonas():
             total_items=paginado[3],
             total_pages=paginado[4]
         )
+    
 @app.route('/update_status/<int:id>', methods=['POST'])
 def update_status(id):
     try:
@@ -857,11 +1073,11 @@ def confirm_delete(id):
                 flash('No se encontró el alquiler.', 'error')
                 return redirect(url_for('pedidos_lonas'))
 
-            id_lona = alquiler[0]
+            id_carpa = alquiler[0]
 
             # Actualizar la cantidad de lonas disponibles
-            cur.execute("UPDATE lona SET cantidad = cantidad + 1 WHERE id_lona = %s", (id_lona,))
-            print(f"Cantidad de lona actualizada para ID Lona: {id_lona}")
+            cur.execute("UPDATE lona SET cantidad = cantidad + 1 WHERE id_carpa = %s", (id_carpa,))
+            print(f"Cantidad de lona actualizada para ID Lona: {id_carpa}")
 
             # Eliminar el registro de alquiler
             cur.execute("DELETE FROM alquila WHERE id_alquila = %s", (id,))
@@ -884,68 +1100,80 @@ def confirm_delete(id):
     # Renderizar la página de confirmación
     return render_template('confirm_delete.html', id=id)
 
-#------------------VISTAS DE PEDIDOS LONAS--------------#
 
-
-
-#------------------VISTAS DE PEDIDOS CARPAS--------------#
+#------------------RENTAR/SOLICITAR CARPA Y PEDIDOS CARPAS--------------#
 @app.route('/rentar_carpas', methods=['GET', 'POST'])
 @login_required
 def rentar_carpas():
-    cur = None
     conn = None
+    cur = None
+    medidas = []
+    colores = []
+
     if request.method == 'POST':
         try:
             # Captura de datos del formulario
-            fecha_inicio = request.form.get('fecha_inicio')
-            fecha_fin = request.form.get('fecha_fin')
-            metodo_pago = request.form.get('metodo_de_pago')
-            medidas = request.form.get('medidas')
-            color = request.form.get('color')
+            fecha_inicio = datetime.strptime(request.form['fecha_inicio'], '%Y-%m-%d')
+            fecha_fin = datetime.strptime(request.form['fecha_fin'], '%Y-%m-%d')
+            metodo_pago = request.form['metodo_de_pago']
+            medidas = request.form['medidas']
+            color = request.form['color']
+            correo_cliente = current_user.correo
 
-            print(f"Datos capturados del formulario: fecha_inicio={fecha_inicio}, fecha_fin={fecha_fin}, metodo_pago={metodo_pago}, medidas={medidas}, color={color}")
-
-            # Verificar que todos los datos estén presentes
-            if not fecha_inicio or not fecha_fin or not metodo_pago or not medidas:
-                raise ValueError("Faltan campos obligatorios en el formulario.")
-
-            # Convertir fechas
-            fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d')
-            fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d')
+            print("Datos capturados del formulario:")
+            print(f"Fecha Inicio: {fecha_inicio}, Fecha Fin: {fecha_fin}, Método de Pago: {metodo_pago}")
+            print(f"Medidas: {medidas}, Color: {color}, Correo Cliente: {correo_cliente}")
 
             # Establecer conexión a la base de datos
             conn = get_db_connection()
             cur = conn.cursor()
 
+
             # Verificar disponibilidad de la carpa
             cur.execute("SELECT cantidad, id_carpa, precio_renta FROM carpa WHERE medidas = %s AND color = %s", (medidas, color))
             result = cur.fetchone()
-            print(f"Resultado de la consulta de disponibilidad de carpa: {result}")
+            print("Resultado de la consulta de disponibilidad de carpa:", result)
 
             if result is None or result[0] <= 0:
                 flash('La carpa solicitada no está disponible.', 'error')
                 return redirect(url_for('rentar_carpas'))
 
             cantidad, id_carpa, precio_renta = result
+            print(f"Cantidad disponible: {cantidad}, ID Carpa: {id_carpa}, Precio Renta: {precio_renta}")
 
-            # Recuperar el id_cliente basado en el correo del cliente
-            cur.execute("SELECT id_cliente FROM cliente JOIN usuario ON cliente.fk_usuario = usuario.id_user WHERE usuario.correo = %s", (current_user.correo,))
-            id_cliente = cur.fetchone()
-            print(f"Resultado de la consulta del ID del cliente: {id_cliente}")
+            # Recuperar el id_cliente y el municipio basado en el correo del cliente
+            cur.execute("""
+                SELECT cliente.id_cliente, cliente.municipio
+                FROM cliente
+                JOIN usuario ON cliente.fk_usuario = usuario.id_user
+                WHERE usuario.correo = %s
+            """, (correo_cliente,))
+            cliente_data = cur.fetchone()
+            print("Resultado de la consulta del cliente:", cliente_data)
 
-            if id_cliente is None:
+            if cliente_data is None:
                 flash('No se encontró el cliente asociado a este correo.', 'error')
                 return redirect(url_for('rentar_carpas'))
 
-            id_cliente = id_cliente[0]
+            id_cliente, municipio = cliente_data
+            print(f"ID Cliente: {id_cliente}, Municipio: {municipio}")
 
             # Calcular el costo total
             dias_alquiler = (fecha_fin - fecha_inicio).days
             recargo = 0
-            if fecha_fin.date() > datetime.now().date():
-                recargo = (fecha_fin.date() - datetime.now().date()).days * 300
+
+            # Verificar si hay recargo por retraso en la devolución
+            fecha_actual = datetime.now().date()
+            if fecha_actual > fecha_fin.date():  # Convertir fecha_fin a date
+                recargo += (fecha_actual - fecha_fin.date()).days * 300
+
+            # Verificar recargo por municipio
+            municipio = municipio.strip().lower()  # Eliminar espacios y convertir a minúsculas
+            if municipio != 'huamantla':
+                recargo += 300  # Añadir recargo solo si el municipio no es 'huamantla'
 
             total = precio_renta + recargo
+            print(f"Recargo total: {recargo}, Total final: {total}")
 
             # Insertar los datos en la tabla alquila
             cur.execute("""
@@ -955,17 +1183,18 @@ def rentar_carpas():
             """, (id_cliente, id_carpa, fecha_inicio, fecha_fin, 'En proceso', metodo_pago, total))
 
             id_alquila = cur.fetchone()[0]
+            print(f"ID de la nueva solicitud de alquiler: {id_alquila}")
 
             # Actualizar la cantidad de carpas disponibles
             cur.execute("UPDATE carpa SET cantidad = cantidad - 1 WHERE id_carpa = %s", (id_carpa,))
+            print(f"Cantidad de carpa actualizada para ID Carpa: {id_carpa}")
 
             conn.commit()
             flash('Solicitud realizada con éxito.', 'success')
 
         except Exception as e:
             print(f"Error durante la ejecución: {e}")
-            if conn:
-                conn.rollback()
+            conn.rollback()
             flash(f'Error al realizar la solicitud: {e}', 'error')
 
         finally:
@@ -973,10 +1202,39 @@ def rentar_carpas():
                 cur.close()
             if conn is not None:
                 conn.close()
-                
-            return render_template('index.html')
 
-    return render_template('rentar_carpas.html')
+            return redirect(url_for('rentar_carpas'))
+
+    # Método GET: Recuperar colores y medidas disponibles
+    try:
+        # Establecer conexión a la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Obtener medidas disponibles
+        cur.execute("SELECT DISTINCT medidas FROM carpa")
+        medidas = [row[0] for row in cur.fetchall()]
+        medidas.sort(key=lambda m: list(map(int, m.split('x'))))  # Ordenar por dimensiones
+
+        # Obtener colores disponibles
+        cur.execute("SELECT DISTINCT color FROM carpa")
+        colores = [row[0] for row in cur.fetchall()]
+        colores.sort()  # Ordenar alfabéticamente
+
+    except Exception as e:
+        print(f"Error durante la recuperación de datos: {e}")
+
+    finally:
+        if cur is not None:
+            cur.close()
+        if conn is not None:
+            conn.close()
+
+    return render_template('rentar_carpas.html', medidas=medidas, colores=colores)
+
+
+
+
 
 
 @app.route('/dashboard/pedidos/carpas')
@@ -986,11 +1244,9 @@ def pedidos_carpas():
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
 
-        # Consultas SQL para el conteo y paginado de carpas
         sql_count = 'SELECT COUNT(*) FROM vista_pedidos_carpa;'
         sql_lim = 'SELECT * FROM vista_pedidos_carpa ORDER BY id_alquila ASC LIMIT %s OFFSET %s;'
 
-        # Asegúrate de que paginador sea una función que maneje la paginación de manera correcta
         paginado = paginador(sql_count, sql_lim, page, per_page)
         
         # Imprime los datos para ver qué está obteniendo
@@ -1010,7 +1266,6 @@ def pedidos_carpas():
             total_pages=paginado[4]
         )
 
-
 @app.route('/update_status_carpa/<int:id>', methods=['POST'])
 def update_status_carpa(id):
     try:
@@ -1028,7 +1283,7 @@ def update_status_carpa(id):
 
         if current_status is None:
             flash('Registro no encontrado.', 'error')
-            return redirect(url_for('pedidoscarpa'))
+            return redirect(url_for('pedidos_carpas'))
 
         current_status = current_status[0]
 
@@ -1065,7 +1320,7 @@ def update_status_carpa(id):
         cur.close()
         conn.close()
 
-    return redirect(url_for('pedidoscarpa'))
+    return redirect(url_for('pedidos_carpas'))
 
 @app.route('/confirm_delete_carpa/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -1081,7 +1336,7 @@ def confirm_delete_carpa(id):
 
             if alquiler is None:
                 flash('No se encontró el alquiler.', 'error')
-                return redirect(url_for('pedidoscarpa'))
+                return redirect(url_for('pedidos_carpas'))
 
             id_carpa = alquiler[0]
 
@@ -1094,23 +1349,36 @@ def confirm_delete_carpa(id):
             print(f"Registro de alquiler con ID {id} eliminado.")
 
             conn.commit()
-            flash('Carpa devuelta y cantidad actualizada con éxito.', 'success')
+            flash('Registro eliminado y cantidad de carpa actualizada.', 'success')
 
         except Exception as e:
-            print(f"Error durante la ejecución: {e}")
+            print(f"Error durante la eliminación: {e}")
             conn.rollback()
-            flash(f'Error al devolver la carpa: {e}', 'error')
+            flash(f'Error al eliminar el registro: {e}', 'error')
 
         finally:
             cur.close()
             conn.close()
 
-        return redirect(url_for('pedidoscarpa'))
+        return redirect(url_for('pedidos_carpas'))
 
     # Renderizar la página de confirmación
     return render_template('confirm_delete_carpa.html', id=id)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+#-------------------------------------------------
 
 @app.route('/Contactanos')
 def conocenos():

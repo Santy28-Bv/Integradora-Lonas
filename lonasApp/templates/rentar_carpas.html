@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %} Solicitud Carpa {% endblock %}
+{% block title %} Solicitud de Carpa {% endblock %}
 
 {% block body %}
 <h1 style="
@@ -11,8 +11,33 @@
     border-radius: 10px; 
     max-width: 600px; 
     margin: 20px auto;
+    border: 2px solid white;
 ">SOLICITE SU CARPA</h1>
-<!-- Formulario de Solicitud -->
+
+<!-- Mensajes Flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div id="flash-messages" style="
+            max-width: 600px; 
+            margin: 20px auto; 
+            padding: 10px; 
+            border-radius: 10px;
+        ">
+            {% for category, message in messages %}
+                <div style="
+                    background: {% if category == 'error' %} rgba(255, 0, 0, 0.8) {% elif category == 'success' %} rgba(0, 255, 0, 0.8) {% else %} rgba(0, 0, 255, 0.8) {% endif %}; 
+                    color: white; 
+                    padding: 10px; 
+                    border-radius: 10px;
+                    margin-bottom: 10px;
+                ">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
 <form action="{{ url_for('rentar_carpas') }}" method="POST" style="
     display: flex;
     flex-direction: column; /* Distribuye los elementos en columnas */
@@ -22,6 +47,7 @@
     border-radius: 15px;
     max-width: 600px; /* Ancho máximo del formulario */
     margin: 0 auto; /* Centrar el formulario horizontalmente */
+    border: 2px solid white;
 ">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -32,6 +58,7 @@
       color: rgb(255, 255, 255);
       background: rgba(28, 28, 28, 0.895);
       border-radius: 100px;
+      border: 2px solid white;
     ">
   </div>
 
@@ -42,6 +69,7 @@
       color: rgb(255, 255, 255);
       background: rgba(28, 28, 28, 0.895);
       border-radius: 100px;
+      border: 2px solid white;
     ">
   </div>
 
@@ -52,6 +80,7 @@
       color: rgb(255, 255, 255);
       background: rgba(28, 28, 28, 0.895);
       border-radius: 100px;
+      border: 2px solid white;
     ">
       <option value="" selected>Selecciona tu Método de pago</option>
       <option value="Efectivo">Efectivo</option>
@@ -66,76 +95,68 @@
       color: rgb(255, 255, 255);
       background: rgba(28, 28, 28, 0.895);
       border-radius: 100px;
+      border: 2px solid white;
     ">
       <option value="" selected>Selecciona las medidas</option>
-      <option value="5x5">5x5</option>
-    <option value="5x10">5x10</option>
-    <option value="5x15">5x15</option>
-    <option value="5x25">5x25</option>
-    <option value="5x30">5x30</option>
-    <option value="5x35">5x35</option>
-    <option value="5x40">5x40</option>
-    <option value="5x45">5x45</option>
-    <option value="5x50">5x50</option>
-    <option value="5x55">5x55</option>
-    <option value="5x60">5x60</option>
-    <option value="10x10">10x10</option>
-    <option value="10x15">10x15</option>
-    <option value="10x20">10x20</option>
-    <option value="10x25">10x25</option>
-    <option value="10x30">10x30</option>
-    <option value="10x35">10x35</option>
-    <option value="10x40">10x40</option>
-    <option value="10x45">10x45</option>
-    <option value="10x50">10x50</option>
-    <option value="10x55">10x55</option>
-    <option value="10x60">10x60</option>
-    <option value="10x65">10x65</option>
-    <option value="10x70">10x70</option>
-    <option value="10x75">10x75</option>
-    <option value="10x80">10x80</option>
-    <option value="10x85">10x85</option>
-    <option value="10x90">10x90</option>
-    <option value="10x95">10x95</option>
-    <option value="10x100">10x100</option>
-
-
-
-
+      {% for medida in medidas %}
+        <option value="{{ medida }}">{{ medida }}</option>
+      {% endfor %}
     </select>
   </div>
 
-  <!-- Campo de color habilitado -->
+  <!-- Selección de Color -->
   <div class="form-group">
-    <label for="inputColor" style="color: rgb(160, 209, 44);">Color de la carpa:</label>
+    <label for="inputColor" style="color: rgb(160, 209, 44);">Selecciona el color de la carpa:</label>
     <select id="inputColor" class="form-control" name="color" required style="
       color: rgb(255, 255, 255);
       background: rgba(28, 28, 28, 0.895);
       border-radius: 100px;
+      border: 2px solid white;
     ">
-      <option value="Blanca" selected>Blanco</option>
-      <!-- Puedes agregar más opciones si es necesario -->
+      <option value="" selected>Selecciona el color</option>
+      {% for color in colores %}
+        <option value="{{ color }}">{{ color }}</option>
+      {% endfor %}
     </select>
   </div>
 
-  <!-- Botón de Envío -->
-  <button type="submit" class="btn btn-primary" style="
-    background: linear-gradient(90deg, rgb(23, 57, 227) 0%, rgb(73, 27, 189) 100%);
-    border-radius: 100px;
-    margin: 5px;
-    padding: 5px;
-    text-decoration: none;
-  ">Enviar Solicitud</button>
-  <a href="{{ url_for('index') }}" class="btn colorI mx-2 border11 opacity" style="
-    background: linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
-    text-align: center;
-    margin: 5px;
-    padding: 5px;
-    border-radius: 100px;
-    text-decoration: none;
-    color: rgb(255, 255, 255); /* Color de texto blanco */
-  ">Cancelar</a>
-
+  <!-- Botones de Enviar y Volver -->
+  <div class="form-group" style="
+    display: flex;
+    justify-content: space-between;
+  ">
+    <button type="submit" class="btn btn-primary" style="
+      background: linear-gradient(90deg, rgb(23, 57, 227) 0%, rgb(73, 27, 189) 100%);
+      border-radius: 100px;
+      border: 2px solid white;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+    ">Enviar Solicitud</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary" style="
+      background: linear-gradient(90deg, rgba(110, 12, 30, 0.98) 0%, rgba(212, 23, 57, 0.98) 100%);
+      border-radius: 100px;
+      border: 2px solid white;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+    ">Volver</a>
+  </div>
 </form>
+
+<!-- JavaScript para eliminar mensajes flash después de 3 segundos -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var flashMessages = document.getElementById('flash-messages');
+      if (flashMessages) {
+        flashMessages.style.opacity = 0;
+        setTimeout(function() {
+          flashMessages.remove();
+        }, 1000); // Tiempo adicional para asegurar la transición de desvanecimiento
+      }
+    }, 3000); // Tiempo antes de empezar a desvanecer
+  });
+</script>
 
 {% endblock %}

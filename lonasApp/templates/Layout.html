@@ -25,9 +25,38 @@
         }
 
         .c4 {
-            background: rgb(32, 6, 183);
+            background-color: #000000;
             color: rgb(255, 255, 255);
             font-size: 17px;
+        }
+
+        .botonadminn {
+    background-color: #ffffff00; /* Color de fondo blanco */
+    color: rgb(225, 11, 11); /* Color del texto negro */
+    font-size: 17px; /* Tamaño de fuente */
+    border: 1px solid #18510b; /* Borde gris claro */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px 20px; /* Espaciado interno */
+    text-align: center; /* Centrar texto */
+    text-decoration: none; /* Eliminar subrayado */
+    display: inline-block; /* Permite ajustar el tamaño del botón */
+    cursor: pointer; /* Cambia el cursor a una mano al pasar sobre el botón */
+    transition: background-color 0.3s, color 0.3s; /* Transición suave para cambios de color */
+}
+
+.botonadminn:hover {
+    background-color: #000000cb; /* Color de fondo al pasar el ratón */
+    color: #333; /* Color del texto al pasar el ratón */
+}
+
+        .c7 {
+            background-color: #000000;
+        
+        }
+        
+        .c8 {
+            background-color: #ffffff;
+        
         }
 
         .lugar {
@@ -41,18 +70,23 @@
         .lugar2 {
             margin: 0px 0px 0px 20px;
         }
+
+        
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark color1 fijo">
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav mr-auto ml-3"> <!-- Agrega ml-3 para margen a la izquierda -->
             {% if current_user.is_authenticated %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="far fa-user"></i> {{ current_user.username }}
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                    <div class="dropdown-menu dropdown-menu-right c7" aria-labelledby="userDropdown">
                         <a class="dropdown-item c4" href="{{ url_for('logout') }}">Cerrar sesión</a>
+                          {% if current_user.rol == 'cliente' %}
+                          <a class="dropdown-item c4" href="{{ url_for('sideClienteInicio') }}">Mi info</a>
+                         {% endif %}
                     </div>
                 </li>
             {% else %}
@@ -61,13 +95,15 @@
                 </li>
             {% endif %}
         </ul>
+    
+
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="moreDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">SERVICIOS</a>
-                    <div class="dropdown-menu" aria-labelledby="moreDropdown">
-                        <a class="dropdown-item" href="{{ url_for('rentar_carpas') }}">Carpas</a>
-                        <a class="dropdown-item" href="{{ url_for('rentar_lonas') }}">Lonas</a>
+                    <div class="dropdown-menu c7" aria-labelledby="moreDropdown">
+                        <a class="dropdown-item c4" href="{{ url_for('rentar_carpas') }}">Carpas</a>
+                        <a class="dropdown-item c4" href="{{ url_for('rentar_lonas') }}">Lonas</a>
                     </div>
                 </li>
                 <li class="nav-item">
@@ -79,17 +115,17 @@
                 </span>
             </ul>
             <form class="form-inline my-2 my-lg-0 ml-auto">
-                <input class="form-control mr-sm-2 lugar" type="search" placeholder="Buscar..." aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
             </form>
             {% if current_user.rol == 'admin' %}
                 <ul class="navbar-nav ml-2">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('lonas_dashboard') }}">Administrador</a>
+                        <a class="nav-link botonadminn color" href="{{ url_for('lonas_dashboard') }}"><strong>Administrador</strong></a>
                     </li>
                 </ul>
             {% endif %}
         </div>
+
+
     </nav>
    
     <div class="container">

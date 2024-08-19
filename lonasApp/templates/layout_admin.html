@@ -10,7 +10,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-
     <style>
         .form-container {
             background: rgba(0, 0, 0, 0.5); /* Fondo oscuro con opacidad */
@@ -26,16 +25,26 @@
             text-align: center;
         }
         .form-control:disabled {
-            background-color: rgba(255, 255, 255, 0.2); /* Fondo blanco con opacidad */
+            background-color: rgba(0, 0, 0, 0.2); /* Fondo blanco con opacidad */
             color: rgba(255, 255, 255, 0.7); /* Texto gris claro */
+        }
+        .custom-dropdown-menu {
+            background-color: #007bff; /* Cambia el color de fondo de la barra desplegable */
+            color: #fff; /* Cambia el color del texto */
+        }
+        .custom-dropdown-menu .dropdown-item {
+            color: #fff; /* Cambia el color del texto de los elementos del menú */
+        }
+        .custom-dropdown-menu .dropdown-item:hover {
+            background-color: #0056b3; /* Cambia el color de fondo cuando se pasa el cursor sobre un elemento */
         }
     </style>
 </head>
-<body>
+<body> 
     <div class="container-fluid">
         <div class="row flex-nowrap">
             <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100" dark>
                     <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                         <span class="fs-5 d-none d-sm-inline"><i class="fa-solid fa-house"></i> Inicio</span>
                     </a>
@@ -67,7 +76,7 @@
                             <i class="far fa-user"></i>
                             <span class="d-none d-sm-inline mx-1"> {{ current_user.username }}</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <ul class="dropdown-menu custom-dropdown-menu text-small shadow">
                             <li><a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar sesión</a></li>
                         </ul>
                     </div>
