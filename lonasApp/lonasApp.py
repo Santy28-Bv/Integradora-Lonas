@@ -18,7 +18,7 @@ csrf = CSRFProtect()
 # Configuración secreta para sesiones
 app.secret_key = "Secretomuysecreto"
 
-#-------------------imagen-----------#
+#-------------------imagen--------------------------------#
 ruta_lonas ='./LonasApp/static/img/uploads/lonas'
 ruta_carpas='./LonasApp/static/img/uploads/carpas'
 #------------- Configuración de inicio de sesión ----------#
@@ -53,8 +53,8 @@ def get_db_connection():
     try:
         conn = psycopg2.connect(host='localhost',
                                 dbname='lonas',
-                                user=os.environ['postgres'],
-                                password=os.environ['12345'])
+                                user=os.environ['DB_USER'],
+                                password=os.environ['DB_PASSWORD'])
         return conn
     except psycopg2.Error as error:
         print(f"Error al conectar a la base de datos: {error}")
@@ -160,7 +160,7 @@ def formulario_usuario():
             flash("Error al conectar a la base de datos", 'error')
             return redirect(url_for('formulario_usuario'))
     
-    return render_template('Crear_Usuario.html')
+    return render_template('Crear_usuario.html')
 
 
 
@@ -1390,7 +1390,7 @@ if __name__ == '__main__':
     csrf.init_app(app)
     app.register_error_handler(404,pagina_no_encontrada)
     app.register_error_handler(401,acceso_no_autorizado)
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True, port=5000)
     
     #activar entorno         vistual.venv\Scripts\activate
     #correr aplicacion       python app\app.py run      
@@ -1398,3 +1398,4 @@ if __name__ == '__main__':
 
 
         #correr aplicacion       python LonasApp\LonasApp.py run
+        #host='0.0.0.0', port=5000
