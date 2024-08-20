@@ -19,8 +19,8 @@ csrf = CSRFProtect()
 app.secret_key = "Secretomuysecreto"
 
 #-------------------imagen--------------------------------#
-ruta_lonas ='./LonasApp/static/img/uploads/lonas'
-ruta_carpas='./LonasApp/static/img/uploads/carpas'
+ruta_lonas ='./static/img/uploads/lonas'
+ruta_carpas='./static/img/uploads/carpas'
 #------------- Configuración de inicio de sesión ----------#
 Login_manager_app = LoginManager(app)
 
@@ -36,8 +36,8 @@ def my_random_string(string_length=10):
     return random[0:string_length]  # Regresa la cadena aleatoria.
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-app.config['UPLOAD_FOLDER_LONAS'] = './lonasApp/static/img/uploads/lonas/'
-app.config['UPLOAD_FOLDER_CARPAS'] = './lonasApp/static/img/uploads/carpas/'
+app.config['UPLOAD_FOLDER_LONAS'] = './static/img/uploads/lonas/'
+app.config['UPLOAD_FOLDER_CARPAS'] = './static/img/uploads/carpas/'
 
 if not os.path.exists(app.config['UPLOAD_FOLDER_LONAS']):
     os.makedirs(app.config['UPLOAD_FOLDER_LONAS'])
@@ -955,7 +955,7 @@ def rentar_lonas():
 
         # Obtener colores disponibles
         cur.execute("SELECT DISTINCT color FROM lona")
-        colores = [row[0] for row in cur.fetchall()]
+        colores = [row[0]for row in cur.fetchall()]
         colores.sort()  # Ordenar alfabéticamente
 
     except Exception as e:
