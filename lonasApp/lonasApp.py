@@ -955,7 +955,7 @@ def rentar_lonas():
 
         # Obtener colores disponibles
         cur.execute("SELECT DISTINCT color FROM lona")
-        colores = [row[0]for row in cur.fetchall()]
+        colores = [row[0] for row in cur.fetchall()]
         colores.sort()  # Ordenar alfabéticamente
 
     except Exception as e:
